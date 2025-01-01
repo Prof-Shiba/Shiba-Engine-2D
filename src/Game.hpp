@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
+#include <SDL2/SDL_image.h>
 
 class Game {
 public:
@@ -9,6 +10,7 @@ public:
   ~Game();
   void Initialize();
   void Run();
+  void Setup();
   void ProcessInput();
   void Update();
   void Render();
