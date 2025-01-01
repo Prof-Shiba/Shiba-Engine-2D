@@ -1,7 +1,8 @@
 #include "Game.hpp"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_timer.h>
 #include <iostream>
-
+#include "../libs/glm/glm.hpp"
 
 Game::Game() {
   is_running = false;
@@ -12,9 +13,26 @@ Game::~Game() {
   std::cout << "Game Destructor Called" << std::endl;
 }
 
+glm::vec2 player_position;
+glm::vec2 player_velocity;
+
 void Game::Setup() {
-  // TODO: Initialize game objects
+  player_position = glm::vec2(10.0, 20.0);
+  player_velocity = glm::vec2(1.0, 0.0);
 }
+
+void Game::Update() {
+  // Yield resources to OS
+  unsigned int timeToWait = MS_PER_FRAME - (SDL_GetTicks() - ms_previous_frame);
+  if (timeToWait > 0 && timeToWait <= MS_PER_FRAME)
+    SDL_Delay(timeToWait);
+
+  // Store current frame time
+  ms_previous_frame = SDL_GetTicks();
+
+  player_position.x += player_velocity.x;
+  player_position.y += player_velocity.y;
+};
 
 void Game::Initialize() {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -81,9 +99,6 @@ void Game::ProcessInput() {
   }
 };
 
-void Game::Update() {
-  // TODO: Update game objects
-};
 
 void Game::Render() {
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
@@ -96,7 +111,12 @@ void Game::Render() {
   SDL_FreeSurface(surface);
   
   // Destination rect to place our texture at
-  SDL_Rect dstRect {10, 10, 32, 32};
+  SDL_Rect dstRect {
+    static_cast<int>(player_position.x),
+    static_cast<int>(player_position.y),
+    32,
+    32
+  };
   SDL_RenderCopy(renderer, texture, NULL, &dstRect);
   SDL_DestroyTexture(texture);
   
