@@ -2,9 +2,6 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
-const Uint16 WIDTH = 1280;
-const Uint16 HEIGHT = 720;
-const int8_t DEFAULT_MONITOR_NUMBER = -1;
 
 Game::Game() {
   is_running = false;
@@ -20,6 +17,12 @@ void Game::Initialize() {
     std::cerr << "SDL failed to Initialize! Line 20 Game.cpp" << std::endl;
     return;
   }
+
+  SDL_DisplayMode display_mode;
+  SDL_GetCurrentDisplayMode(0, &display_mode);
+
+  WIDTH = display_mode.w;
+  HEIGHT = display_mode.h;
 
   window = SDL_CreateWindow(
     "Shibe Engine",
@@ -40,6 +43,8 @@ void Game::Initialize() {
     return;
   }
 
+  // Sets the actual video mode to fullscreen
+  /*SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);*/
   is_running = true;
 };
 

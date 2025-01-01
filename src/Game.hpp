@@ -14,6 +14,9 @@ public:
   void Render();
   void Destroy();
 
+  Uint16 WIDTH;
+  Uint16 HEIGHT;
+  const int8_t DEFAULT_MONITOR_NUMBER = -1;
   bool is_running;
 
 private:
