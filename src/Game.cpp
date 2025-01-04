@@ -18,20 +18,23 @@ glm::vec2 player_velocity;
 
 void Game::Setup() {
   player_position = glm::vec2(10.0, 20.0);
-  player_velocity = glm::vec2(1.0, 0.0);
+  player_velocity = glm::vec2(20.0, 0.0);
 }
 
 void Game::Update() {
   // Yield resources to OS
-  unsigned int timeToWait = MS_PER_FRAME - (SDL_GetTicks() - ms_previous_frame);
-  if (timeToWait > 0 && timeToWait <= MS_PER_FRAME)
-    SDL_Delay(timeToWait);
+  unsigned int time_to_wait = MS_PER_FRAME - (SDL_GetTicks() - ms_previous_frame);
+  if (time_to_wait > 0 && time_to_wait <= MS_PER_FRAME)
+    SDL_Delay(time_to_wait);
+ 
+  // DT is diff in ticks since last frame, converted to seconds
+  double delta_time = (SDL_GetTicks() - ms_previous_frame) / 1000.0;
 
   // Store current frame time
   ms_previous_frame = SDL_GetTicks();
 
-  player_position.x += player_velocity.x;
-  player_position.y += player_velocity.y;
+  player_position.x += player_velocity.x * delta_time;
+  player_position.y += player_velocity.y * delta_time;
 };
 
 void Game::Initialize() {

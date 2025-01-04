@@ -5,6 +5,7 @@
 #include <SDL2/SDL_image.h>
 
 const int8_t FPS = 60;
+// 1000ms -> 1 second. Each frame should take 16.6 repeating ms
 const Uint16 MS_PER_FRAME = 1000 / FPS;
 const int8_t DEFAULT_MONITOR_NUMBER = -1;
 
