@@ -10,7 +10,7 @@ std::string get_formatted_time() {
   std::tm time = *std::localtime(&current_time);
 
   std::ostringstream oss;
-  oss << std::put_time(&time, "%H:%M:%S");
+  oss << std::put_time(&time, "%r");
     
   return oss.str();
 }
