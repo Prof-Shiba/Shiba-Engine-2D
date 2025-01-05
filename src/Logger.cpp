@@ -4,9 +4,6 @@
 #include <iomanip>
 #include "./Logger.h"
 
-const std::string RED = "\x1B[31m";
-const std::string GREEN = "\x1B[32m";
-
 std::string get_formatted_time() {
   const auto now = std::chrono::system_clock::now();
   const auto current_time = std::chrono::system_clock::to_time_t(now);
