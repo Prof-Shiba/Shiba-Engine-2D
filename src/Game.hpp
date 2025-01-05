@@ -28,5 +28,5 @@ public:
 private:
   SDL_Window* window;
   SDL_Renderer* renderer;
-  unsigned int ms_previous_frame = 0;
+  Uint32 ms_previous_frame = 0;
 };
