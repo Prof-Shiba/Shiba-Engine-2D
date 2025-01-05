@@ -17,9 +17,9 @@ std::string get_formatted_time() {
 
 
 void Logger::Log(const std::string& message) {
-  std::cout << GREEN << "LOG: [" << get_formatted_time() << "] " << message << std::endl; 
+  std::cout << CONSOLE_COLOR_GREEN << "LOG: [" << get_formatted_time() << "] " << message << CONSOLE_RESET_COLOR << std::endl;
 }
 
 void Logger::Err(const std::string& message) {
-  std::cerr << RED << "ERROR: [" << get_formatted_time() << "] " << message << std::endl; 
+  std::cerr << CONSOLE_COLOR_RED << "ERROR: [" << get_formatted_time() << "] " << message << CONSOLE_RESET_COLOR << std::endl; 
 }
