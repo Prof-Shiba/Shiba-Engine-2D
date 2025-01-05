@@ -1,5 +1,12 @@
 #pragma once
 #include <string>
+#include <vector>
+#include <cstdint>
+
+struct LogEntry {
+  uint32_t type;
+  std::string message;
+};
 
 const std::string CONSOLE_COLOR_RED = "\x1B[31m";
 const std::string CONSOLE_COLOR_GREEN = "\x1B[32m";

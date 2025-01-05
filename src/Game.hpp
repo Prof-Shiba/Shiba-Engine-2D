@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <SDL2/SDL_image.h>
@@ -28,5 +29,5 @@ public:
 private:
   SDL_Window* window;
   SDL_Renderer* renderer;
-  Uint32 ms_previous_frame = 0;
+  uint32_t ms_previous_frame = 0;
 };
