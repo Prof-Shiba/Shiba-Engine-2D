@@ -1,16 +1,17 @@
-#include "Game.hpp"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
-#include <iostream>
 #include "../libs/glm/glm.hpp"
+#include "Logger.h"
+#include "Game.hpp"
 
 Game::Game() {
   is_running = false;
-  std::cout << "Game Constructor Called" << std::endl;
+  Logger::Log("Game Constructor Called");
 }
 
 Game::~Game() {
-  std::cout << "Game Destructor Called" << std::endl;
+  Logger::Log("Game Destructor Called");
 }
 
 glm::vec2 player_position;
@@ -23,7 +24,7 @@ void Game::Setup() {
 
 void Game::Update() {
   // Yield resources to OS
-  unsigned int time_to_wait = MS_PER_FRAME - (SDL_GetTicks() - ms_previous_frame);
+  Uint32 time_to_wait = MS_PER_FRAME - (SDL_GetTicks() - ms_previous_frame);
   if (time_to_wait > 0 && time_to_wait <= MS_PER_FRAME)
     SDL_Delay(time_to_wait);
  
@@ -39,7 +40,7 @@ void Game::Update() {
 
 void Game::Initialize() {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-    std::cerr << "SDL failed to Initialize! Line 20 Game.cpp" << std::endl;
+    Logger::Err("SDL failed to Initialize!");
     return;
   }
 
@@ -59,13 +60,13 @@ void Game::Initialize() {
     SDL_WINDOW_ALWAYS_ON_TOP
   );
   if (!window) {
-    std::cerr << "Failed creating SDL window! Line 25 Game.cpp" << std::endl;
+    Logger::Err("Failed creating SDL window!");
     return;
   }
 
   renderer = SDL_CreateRenderer(window, DEFAULT_MONITOR_NUMBER, 0);
   if (!renderer) {
-    std::cerr << "Failed to create SDL renderer! Line 39 Game.cpp" << std::endl;
+    Logger::Err("Failed to create SDL renderer!");
     return;
   }
 
