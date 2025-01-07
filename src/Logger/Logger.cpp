@@ -2,7 +2,7 @@
 #include <chrono>
 #include <sstream>
 #include <iomanip>
-#include "./Logger.h"
+#include "./Logger.hpp"
 
 std::vector<LogEntry> Logger::all_messages;
 

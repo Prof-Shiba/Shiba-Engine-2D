@@ -1,8 +1,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
-#include "../libs/glm/glm.hpp"
-#include "Logger.h"
+#include "../../libs/glm/glm.hpp"
+#include "../Logger/Logger.hpp"
 #include "Game.hpp"
 
 Game::Game() {
