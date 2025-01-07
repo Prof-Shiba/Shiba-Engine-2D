@@ -7,13 +7,13 @@ LANG_STD = -std=c++17
 INCLUDE_PATHS = -I"./libs/"
 SOURCE_FILES = src/Game/*.cpp src/Logger/*.cpp src/*.cpp
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -llua
-OUTPUT = -o ShibeEngine
+OUTPUT = ShibeEngine
 
 build:
-		$(CC) $(COMPILER_FLAGS) $(LANG_STD) $(INCLUDE_PATHS) $(SOURCE_FILES) $(LINKER_FLAGS) $(OUTPUT);
+		$(CC) $(COMPILER_FLAGS) $(LANG_STD) $(INCLUDE_PATHS) $(SOURCE_FILES) $(LINKER_FLAGS) -o $(OUTPUT);
 
 run:
-		./ShibeEngine
+		./$(OUTPUT)
 
 clean:
-		rm ShibeEngine
+		rm $(OUTPUT)
