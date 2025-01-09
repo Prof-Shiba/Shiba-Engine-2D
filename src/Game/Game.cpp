@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
+#include "../ECS/ECS.hpp"
 #include "../../libs/glm/glm.hpp"
 #include "../Logger/Logger.hpp"
 #include "Game.hpp"
@@ -14,12 +15,11 @@ Game::~Game() {
   Logger::Log("Game Destructor Called");
 }
 
-glm::vec2 player_position;
-glm::vec2 player_velocity;
-
 void Game::Setup() {
-  player_position = glm::vec2(10.0, 20.0);
-  player_velocity = glm::vec2(20.0, 0.0);
+  // TODO: Entity tank = Registry.create_entity();
+  // tank.add_component<transform_component>();
+  // tank.add_component<box_collider_component>();
+  // tank.add_component<sprite_component>("./path/to/image");
 }
 
 void Game::Update() {
@@ -34,8 +34,10 @@ void Game::Update() {
   // Store current frame time
   ms_previous_frame = SDL_GetTicks();
 
-  player_position.x += player_velocity.x * delta_time;
-  player_position.y += player_velocity.y * delta_time;
+  // TODO: 
+  // Movement_System.update();
+  // Collision_System.update();
+  // etc
 };
 
 void Game::Initialize() {
@@ -108,22 +110,8 @@ void Game::Render() {
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
   SDL_RenderClear(renderer);
   
-  // Loads PNG texture, surface only needed to make texture using it
-  // Loading is relative to executable dir, not Game.cpp dir
-  SDL_Surface* surface = IMG_Load("./assets/images/tank-tiger-right.png");
-  SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-  SDL_FreeSurface(surface);
-  
-  // Destination rect to place our texture at
-  SDL_Rect dstRect {
-    static_cast<int>(player_position.x),
-    static_cast<int>(player_position.y),
-    32,
-    32
-  };
-  SDL_RenderCopy(renderer, texture, NULL, &dstRect);
-  SDL_DestroyTexture(texture);
-  
+  // TODO: Render game objects
+
   // Double buffer
   SDL_RenderPresent(renderer);
 };
