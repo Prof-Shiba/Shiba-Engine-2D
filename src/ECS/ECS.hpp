@@ -15,7 +15,14 @@ typedef std::bitset<MAX_COMPONENTS> Signature;
 // Components store pure data that can be manipulated
 // by the registry
 ///////////////////////////////////////////////////////////////
-class Component {
+struct I_component {
+protected:
+  static int next_id;
+};
+
+// assign unique id to a comp type
+template <typename T>
+class Component : public I_component {
 public:
   Component() = default;
   ~Component() = default;
@@ -25,6 +32,11 @@ public:
 
 private:
   int component_id;
+  // returns unique id of comp <T>
+  static int get_id() {
+    static auto id = next_id++;
+    return id;
+  }
 };
 
 ///////////////////////////////////////////////////////////////
@@ -55,6 +67,7 @@ public:
   void remove_entity_from_system(Entity entity);
   std::vector<Entity> get_system_entities() const;
   Signature& get_component_signature() const;
+  template<typename T_component> void require_component();
 
 private:
   Signature component_signature;
@@ -73,3 +86,9 @@ public:
 private:
   
 };
+
+template <typename T_component>
+void System::require_component() {
+  const auto component_id = Component<T_component>::get_component_id();
+  component_signature.set(component_id);
+}
