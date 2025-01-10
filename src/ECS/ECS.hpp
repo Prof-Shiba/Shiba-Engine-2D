@@ -20,6 +20,7 @@ public:
   Component() = default;
   ~Component() = default;
   Component(const Component&) = default;
+
   int get_component_id() const;
 
 private:
@@ -34,6 +35,7 @@ public:
   Entity(int id) : entity_id{id} {}
   ~Entity() = default;
   Entity(const Entity&) = default;
+
   int get_entity_id() const;
 
 private:
