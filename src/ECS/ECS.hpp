@@ -66,7 +66,7 @@ public:
   void add_entity_to_system(Entity entity);
   void remove_entity_from_system(Entity entity);
   std::vector<Entity> get_system_entities() const;
-  Signature& get_component_signature() const;
+  const Signature& get_component_signature() const;
   template<typename T_component> void require_component();
 
 private:
