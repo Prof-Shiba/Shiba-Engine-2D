@@ -28,7 +28,7 @@ public:
   ~Component() = default;
   Component(const Component&) = default;
 
-  size_t get_component_id() const;
+  uint8_t get_component_id() const;
 
 private:
   uint8_t component_id;
