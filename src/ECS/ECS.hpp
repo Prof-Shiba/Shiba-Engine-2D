@@ -48,7 +48,7 @@ public:
   ~Entity() = default;
   Entity(const Entity&) = default;
 
-  size_t get_entity_id() const;
+  uint32_t get_entity_id() const;
 
 private:
   uint32_t entity_id;
