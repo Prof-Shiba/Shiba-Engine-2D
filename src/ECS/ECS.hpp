@@ -5,6 +5,7 @@
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
+#include <set>
 
 ///////////////////////////////////////////////////////////////
 // bitset tracks which components an entity has
@@ -111,6 +112,9 @@ public:
   Registry() = default;
   ~Registry() = default;
   Registry(const Registry&) = default;
+  Entity create_entity();
+  void add_entity_to_system(Entity entity);
+  void update();
   // TODO:
   // Create & Remove entity
   // add and remove components
@@ -126,6 +130,8 @@ private:
   // Vector index = entity id
   std::vector<Signature> entity_component_signatures;
   std::unordered_map<std::type_index, System*> systems;
+  std::set<Entity> entities_to_add;
+  std::set<Entity> entities_to_remove;
 };
 
 template <typename T_component>
