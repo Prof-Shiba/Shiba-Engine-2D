@@ -2,6 +2,8 @@
 
 #include <cstdint>
 #include <bitset>
+#include <typeindex>
+#include <unordered_map>
 #include <vector>
 
 ///////////////////////////////////////////////////////////////
@@ -109,13 +111,21 @@ public:
   Registry() = default;
   ~Registry() = default;
   Registry(const Registry&) = default;
+  // TODO:
+  // Create & Remove entity
+  // add and remove components
+  // check if entity has component
+  // Add & Remove system
 
 private:
   size_t total_num_of_entities {0};
   // Each pool contains all the data of a certain comp type
   // Vector index is component type ID
   // Pool index is entity id
-  std::vector<I_Pool*> component_pool;  
+  std::vector<I_Pool*> component_pool;
+  // Vector index = entity id
+  std::vector<Signature> entity_component_signatures;
+  std::unordered_map<std::type_index, System*> systems;
 };
 
 template <typename T_component>
