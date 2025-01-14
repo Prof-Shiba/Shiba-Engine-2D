@@ -17,7 +17,7 @@ typedef std::bitset<MAX_COMPONENTS> Signature;
 ///////////////////////////////////////////////////////////////
 struct I_component {
 protected:
-  static size_t next_id;
+  static uint8_t next_id;
 };
 
 // assign unique id to a comp type
@@ -31,9 +31,9 @@ public:
   size_t get_component_id() const;
 
 private:
-  size_t component_id;
+  uint8_t component_id;
   // returns unique id of comp <T>
-  static size_t get_id() {
+  static uint8_t get_id() {
     static auto id = next_id++;
     return id;
   }
@@ -44,14 +44,14 @@ private:
 ///////////////////////////////////////////////////////////////
 class Entity {
 public:
-  Entity(size_t id) : entity_id{id} {}
+  Entity(uint32_t id) : entity_id{id} {}
   ~Entity() = default;
   Entity(const Entity&) = default;
 
   size_t get_entity_id() const;
 
 private:
-  size_t entity_id;
+  uint32_t entity_id;
 };
 
 ///////////////////////////////////////////////////////////////
