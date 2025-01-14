@@ -75,6 +75,33 @@ private:
 };
 
 ///////////////////////////////////////////////////////////////
+// Must use an interface class as we don't know the types yet
+// for the registry class!
+///////////////////////////////////////////////////////////////
+class I_Pool {
+public:
+  virtual ~I_Pool() = default;
+};
+
+template <typename T>
+class Pool : public I_Pool {
+public:
+  Pool(size_t size = 100) { data.resize(size); }
+  virtual ~Pool() = default;
+  bool is_empty() { return data.empty(); }
+  size_t get_size() { return data.size(); }
+  void resize(size_t size) { data.resize(size); }
+  void clear() {data.clear(); }
+  void add(T obj) { data.push_back(obj); }
+  void set_new_index(size_t index, T obj) { data[index] = obj; }
+  T& get_at_index(size_t index) { return static_cast<T&>( data[index] ); }
+  T& operator[](size_t index) { return data[index]; }
+
+private:
+  std::vector<T> data;    
+};
+
+///////////////////////////////////////////////////////////////
 // The registry can manipulate an entity and its components
 ///////////////////////////////////////////////////////////////
 class Registry {
@@ -85,7 +112,10 @@ public:
 
 private:
   size_t total_num_of_entities {0};
-  
+  // Each pool contains all the data of a certain comp type
+  // Vector index is component type ID
+  // Pool index is entity id
+  std::vector<I_Pool*> component_pool;  
 };
 
 template <typename T_component>
