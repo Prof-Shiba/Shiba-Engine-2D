@@ -1,6 +1,6 @@
 #include "ECS.hpp"
 
-int Entity::get_entity_id() const { return entity_id; }
+size_t Entity::get_entity_id() const { return entity_id; }
 
 void System::add_entity_to_system(Entity entity) { entities.push_back(entity); }
 
