@@ -4,6 +4,7 @@
 #include <bitset>
 #include <typeindex>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 #include <set>
 
@@ -112,11 +113,15 @@ public:
   Registry() = default;
   ~Registry() = default;
   Registry(const Registry&) = default;
+  // Entity management
   Entity create_entity();
   void add_entity_to_system(Entity entity);
+  // Component management
+  template <typename T_component, typename ...TArgs> void add_component(Entity entity, TArgs&& ...args);
+
   void update();
   // TODO:
-  // Create & Remove entity
+  // Remove entity
   // add and remove components
   // check if entity has component
   // Add & Remove system
@@ -134,8 +139,41 @@ private:
   std::set<Entity> entities_to_remove;
 };
 
+/////////////////////////////////////////////////////////////
+// Templates below 
+///////////////////////////////////////////////////////////////
 template <typename T_component>
 void System::require_component() {
   const auto component_id = Component<T_component>::get_component_id();
   component_signature.set(component_id);
+}
+
+
+template <typename T_component, typename ...TArgs>
+void Registry::add_component(Entity entity, TArgs&& ...args) {
+  const auto component_id = Component<T_component>::get_component_id();
+  const auto entity_id = entity.get_entity_id();
+
+  if (component_id >= component_pool.size())
+    component_pool.resize(component_id + 1, nullptr);
+  
+  // If we don't have a pool for that comp type, make it
+  if (!component_pool[component_id]) {
+    Pool<T_component>* new_comp_pool = new Pool<T_component>();
+    component_pool[component_id] = new_comp_pool;
+  }
+
+  // get the pool of comp values for that comp type
+  Pool<T_component>* component_pool = component_pool[component_id];
+
+  if (entity_id >= component_pool->get_size())
+    component_pool->resize(total_num_of_entities);
+
+  // Create new comp obj or type T_comp, and fwrd the various
+  // params to the constructor
+  T_component new_component(std::forward<TArgs>(args)...);
+  component_pool->set_new_index(entity_id, new_component);
+
+  // Update the comp sig of the entity and set comp id on bitset to 1
+  entity_component_signatures[entity_id].set(component_id);
 }
