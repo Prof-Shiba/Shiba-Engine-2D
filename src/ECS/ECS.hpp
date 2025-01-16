@@ -9,15 +9,16 @@
 #include <set>
 
 ///////////////////////////////////////////////////////////////
-// bitset tracks which components an entity has
-// also helps track which entities a system is interested in
+// bitset tracks which components an entity has, and helps
+// track which entities a system is interested in
 ///////////////////////////////////////////////////////////////
 const uint8_t MAX_COMPONENTS = 32;
 typedef std::bitset<MAX_COMPONENTS> Signature;
 
 ///////////////////////////////////////////////////////////////
-// Components store pure data that can be manipulated
-// by the registry
+// Components store pure data that can be manipulated by the
+// registry. Ensures diff comps (health, position, sprite etc)
+// will be assigned a unique id.
 ///////////////////////////////////////////////////////////////
 struct I_component {
 protected:
@@ -44,7 +45,8 @@ private:
 };
 
 ///////////////////////////////////////////////////////////////
-// Entity is an ID representing an object in the world 
+// Entity is an ID representing an object in the world
+// it's just a wrapper for a number so we can track things
 ///////////////////////////////////////////////////////////////
 class Entity {
 public:
@@ -60,6 +62,12 @@ private:
 
 ///////////////////////////////////////////////////////////////
 // System processes entities with a certain Signature
+//
+// It represents game logic that operates on entities and their
+// components. 
+//
+// It will declare what components it needs through the component
+// signature, only process an entity with the required components
 ///////////////////////////////////////////////////////////////
 class System {
 public:
@@ -79,6 +87,10 @@ private:
 };
 
 ///////////////////////////////////////////////////////////////
+// The pool is a storage container. Components of the same type
+// are stored here in one area, making it easier to access
+// (as well as a lot faster!)
+//
 // Must use an interface class as we don't know the types yet
 // for the registry class!
 ///////////////////////////////////////////////////////////////
@@ -107,6 +119,10 @@ private:
 
 ///////////////////////////////////////////////////////////////
 // The registry can manipulate an entity and its components
+// it's what the game code will interact with to do things
+//
+// It coordinates all the other parts of the ECS, and is the
+// main interface everything will go through
 ///////////////////////////////////////////////////////////////
 class Registry {
 public:
@@ -164,15 +180,15 @@ void Registry::add_component(Entity entity, TArgs&& ...args) {
   }
 
   // get the pool of comp values for that comp type
-  Pool<T_component>* component_pool = component_pool[component_id];
+  Pool<T_component>* new_component_pool = component_pool[component_id];
 
-  if (entity_id >= component_pool->get_size())
-    component_pool->resize(total_num_of_entities);
+  if (entity_id >= new_component_pool->get_size())
+    new_component_pool->resize(total_num_of_entities);
 
   // Create new comp obj or type T_comp, and fwrd the various
   // params to the constructor
   T_component new_component(std::forward<TArgs>(args)...);
-  component_pool->set_new_index(entity_id, new_component);
+  new_component_pool->set_new_index(entity_id, new_component);
 
   // Update the comp sig of the entity and set comp id on bitset to 1
   entity_component_signatures[entity_id].set(component_id);
