@@ -180,15 +180,15 @@ void Registry::add_component(Entity entity, TArgs&& ...args) {
   }
 
   // get the pool of comp values for that comp type
-  Pool<T_component>* new_component_pool = component_pool[component_id];
+  Pool<T_component>* current_comp_pool = component_pool[component_id];
 
-  if (entity_id >= new_component_pool->get_size())
-    new_component_pool->resize(total_num_of_entities);
+  if (entity_id >= current_comp_pool->get_size())
+    current_comp_pool->resize(total_num_of_entities);
 
   // Create new comp obj or type T_comp, and fwrd the various
   // params to the constructor
   T_component new_component(std::forward<TArgs>(args)...);
-  new_component_pool->set_new_index(entity_id, new_component);
+  current_comp_pool->set_new_index(entity_id, new_component);
 
   // Update the comp sig of the entity and set comp id on bitset to 1
   entity_component_signatures[entity_id].set(component_id);
