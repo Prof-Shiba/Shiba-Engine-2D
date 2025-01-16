@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 #include <set>
+#include "../Logger/Logger.hpp"
 
 ///////////////////////////////////////////////////////////////
 // bitset tracks which components an entity has, and helps
@@ -134,6 +135,9 @@ public:
   void add_entity_to_system(Entity entity);
   // Component management
   template <typename T_component, typename ...TArgs> void add_component(Entity entity, TArgs&& ...args);
+  template <typename T_component> void remove_component(Entity entity);
+  template <typename T_component> bool has_component(Entity entity);
+
 
   void update();
   // TODO:
@@ -192,4 +196,26 @@ void Registry::add_component(Entity entity, TArgs&& ...args) {
 
   // Update the comp sig of the entity and set comp id on bitset to 1
   entity_component_signatures[entity_id].set(component_id);
+}
+
+template <typename T_component>
+void Registry::remove_component(Entity entity) {
+  if (has_component<T_component>(entity)) {
+  const auto component_id = Component<T_component>::get_component_id();
+  const auto entity_id = entity.get_entity_id();
+
+  entity_component_signatures[entity_id].set(component_id, false);
+  Logger::Log("Removed component successfully!");
+  } 
+  else {
+    Logger::Err("Failed removing component! Entity is missing component!");
+  }
+}
+
+template <typename T_component>
+bool Registry::has_component(Entity entity) {
+  const auto component_id = Component<T_component>::get_component_id();
+  const auto entity_id = entity.get_entity_id();
+
+  return entity_component_signatures[entity_id].test(component_id);
 }
