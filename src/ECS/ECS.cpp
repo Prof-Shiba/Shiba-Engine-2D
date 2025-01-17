@@ -2,6 +2,8 @@
 #include "../Logger/Logger.hpp"
 #include <string>
 
+uint8_t I_component::next_id {0};
+
 uint32_t Entity::get_entity_id() const { return entity_id; }
 
 void System::add_entity_to_system(Entity entity) { entities.push_back(entity); }

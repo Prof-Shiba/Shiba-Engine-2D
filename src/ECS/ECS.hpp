@@ -142,7 +142,7 @@ public:
   // Component management
   template <typename T_component, typename ...TArgs> void add_component(Entity entity, TArgs&& ...args);
   template <typename T_component> void remove_component(Entity entity);
-  template <typename T_component> bool has_component(Entity entity);
+  template <typename T_component> bool has_component(Entity entity) const;
 
 
   void update();
@@ -158,8 +158,10 @@ private:
   // Vector index is component type ID
   // Pool index is entity id
   std::vector<I_Pool*> component_pool;
+
   // Vector index = entity id
   std::vector<Signature> entity_component_signatures;
+
   std::unordered_map<std::type_index, System*> systems;
   std::set<Entity> entities_to_add;
   std::set<Entity> entities_to_remove;
@@ -219,7 +221,7 @@ void Registry::remove_component(Entity entity) {
 }
 
 template <typename T_component>
-bool Registry::has_component(Entity entity) {
+bool Registry::has_component(Entity entity) const {
   const auto component_id = Component<T_component>::get_component_id();
   const auto entity_id = entity.get_entity_id();
 
