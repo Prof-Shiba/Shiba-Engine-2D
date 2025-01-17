@@ -47,7 +47,13 @@ private:
 
 ///////////////////////////////////////////////////////////////
 // Entity is an ID representing an object in the world
-// it's just a wrapper for a number so we can track things
+// (actors in UE)
+//
+// it's just a wrapper for a number and for accessing what
+// components are grouped together, so we can track things.
+//
+// (if renderer needs to render a SpriteComponent it needs 
+// to know what transform component is connected to that etc)
 ///////////////////////////////////////////////////////////////
 class Entity {
 public:
@@ -64,11 +70,11 @@ private:
 ///////////////////////////////////////////////////////////////
 // System processes entities with a certain Signature
 //
-// It represents game logic that operates on entities and their
-// components. 
+// MovementSystem might require a MovementComponent,
+// CollisionSystem might require ColliderComponent, etc.
 //
-// It will declare what components it needs through the component
-// signature, only process an entity with the required components
+// RendererMeshSystem might find all meshes in the scene and
+// submit them to the Renderer to be rendered.
 ///////////////////////////////////////////////////////////////
 class System {
 public:
@@ -89,8 +95,8 @@ private:
 
 ///////////////////////////////////////////////////////////////
 // The pool is a storage container. Components of the same type
-// are stored here in one area, making it easier to access
-// (as well as a lot faster!)
+// are stored here in one area, which utilizes CPU cache making
+// it a ton faster as opposed to random cold pointers in RAM.
 //
 // Must use an interface class as we don't know the types yet
 // for the registry class!
