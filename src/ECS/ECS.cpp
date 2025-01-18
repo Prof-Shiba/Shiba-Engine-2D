@@ -21,7 +21,7 @@ std::vector<Entity> System::get_system_entities() const { return entities; }
 const Signature& System::get_component_signature() const { return component_signature; }
 
 Entity Registry::create_entity() {
-  int8_t entity_id = total_num_of_entities++;
+  uint32_t entity_id = total_num_of_entities++;
   Entity new_entity(entity_id);
   
   entities_to_add.insert(new_entity);
