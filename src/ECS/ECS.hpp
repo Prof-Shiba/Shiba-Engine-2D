@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <bitset>
+#include <memory>
 #include <typeindex>
 #include <unordered_map>
 #include <utility>
@@ -136,14 +137,21 @@ public:
   Registry() = default;
   ~Registry() = default;
   Registry(const Registry&) = default;
+
   // Entity management
   Entity create_entity();
   void add_entity_to_system(Entity entity);
+
   // Component management
-  template <typename T_component, typename ...TArgs> void add_component(Entity entity, TArgs&& ...args);
+  template <typename T_component, typename ...T_Args> void add_component(Entity entity, T_Args&& ...T_args);
   template <typename T_component> void remove_component(Entity entity);
   template <typename T_component> bool has_component(Entity entity) const;
 
+  // System management
+  template <typename T_system, typename ...T_Args> void add_system(T_Args&& ...T_args);
+  template <typename T_system> void remove_system();
+  template <typename T_system> bool has_system() const;
+  template <typename T_system> T_system& get_system() const;
 
   void update();
   // TODO:
@@ -226,4 +234,28 @@ bool Registry::has_component(Entity entity) const {
   const auto entity_id = entity.get_entity_id();
 
   return entity_component_signatures[entity_id].test(component_id);
+}
+
+template <typename T_system, typename ...T_Args>
+void Registry::add_system(T_Args&& ...T_args) {
+  T_system* new_system(new T_system(std::forward<T_Args>(T_args)...));
+  systems.insert(std::make_pair(std::type_index(typeid(T_system)), new_system));
+
+}
+
+template <typename T_system>
+void Registry::remove_system() {
+  auto system = systems.find(std::type_index(typeid(T_system)));
+  systems.erase(system);
+}
+
+template <typename T_system>
+bool Registry::has_system() const {
+  return systems.find(std::type_index(typeid(T_system))) != systems.end();
+}
+
+template <typename T_system>
+T_system& Registry::get_system() const {
+  auto system = systems.find(std::type_index(typeid(T_system)));
+  return *(std::static_pointer_cast<T_system>(system->second));
 }
