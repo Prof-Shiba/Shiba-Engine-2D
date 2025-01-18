@@ -197,7 +197,7 @@ void Registry::add_component(Entity entity, TArgs&& ...args) {
   if (entity_id >= current_comp_pool->get_size())
     current_comp_pool->resize(total_num_of_entities);
 
-  // Create new comp obj or type T_comp, and fwrd the various
+  // Create new comp obj of type T_comp, and fwrd the various
   // params to the constructor
   T_component new_component(std::forward<TArgs>(args)...);
   current_comp_pool->set_new_index(entity_id, new_component);
