@@ -1,6 +1,5 @@
 #include "ECS.hpp"
 #include "../Logger/Logger.hpp"
-#include <string>
 
 uint8_t I_component::next_id {0};
 
@@ -35,5 +34,14 @@ void Registry::update() {
 }
 
 void Registry::add_entity_to_system(Entity entity) {
+  const auto& entity_id = entity.get_entity_id();
+  const auto& entity_component_signature = entity_component_signatures[entity_id];
 
+  for (auto& sys: systems) {
+    const auto& system_component_signature = sys.second->get_component_signature();
+    bool will_accept = (entity_component_signature & system_component_signature) == system_component_signature;
+    
+    if (will_accept)
+      sys.second->add_entity_to_system(entity);
+  }
 }
