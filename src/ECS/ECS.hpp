@@ -61,6 +61,9 @@ public:
   Entity(uint32_t id) : entity_id{id} {}
   ~Entity() = default;
   Entity(const Entity&) = default;
+  bool operator<(const Entity& other) const {
+    return entity_id < other.get_entity_id();
+  }
 
   uint32_t get_entity_id() const;
 
@@ -161,7 +164,7 @@ public:
   // Add & Remove system
 
 private:
-  size_t total_num_of_entities {0};
+  uint32_t total_num_of_entities {0};
   // Each pool contains all the data of a certain comp type
   // Vector index is component type ID
   // Pool index is entity id
@@ -240,7 +243,6 @@ template <typename T_system, typename ...T_Args>
 void Registry::add_system(T_Args&& ...T_args) {
   T_system* new_system(new T_system(std::forward<T_Args>(T_args)...));
   systems.insert(std::make_pair(std::type_index(typeid(T_system)), new_system));
-
 }
 
 template <typename T_system>
