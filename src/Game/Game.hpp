@@ -4,6 +4,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <SDL2/SDL_image.h>
+#include "../ECS/ECS.hpp"
 
 const Uint16 FPS = 144;
 // 1000ms -> 1 second. Each frame should take 16.6 repeating ms
@@ -30,4 +31,5 @@ private:
   SDL_Window* window;
   SDL_Renderer* renderer;
   uint32_t ms_previous_frame = 0;
+  Registry* registry;
 };
