@@ -31,5 +31,5 @@ private:
   SDL_Window* window;
   SDL_Renderer* renderer;
   uint32_t ms_previous_frame = 0;
-  Registry* registry;
+  std::unique_ptr<Registry> registry;
 };
