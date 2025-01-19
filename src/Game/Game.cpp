@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
+#include <memory>
 #include "../ECS/ECS.hpp"
 #include "../../libs/glm/glm.hpp"
 #include "../Logger/Logger.hpp"
@@ -8,7 +9,7 @@
 
 Game::Game() {
   is_running = false;
-  registry = new Registry();
+  registry = std::make_unique<Registry>();
   Logger::Log("Game Constructor Called");
 }
 
