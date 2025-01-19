@@ -168,12 +168,12 @@ private:
   // Each pool contains all the data of a certain comp type
   // Vector index is component type ID
   // Pool index is entity id
-  std::vector<I_Pool*> component_pool;
+  std::vector<std::shared_ptr<I_Pool>> component_pool;
 
   // Vector index = entity id
   std::vector<Signature> entity_component_signatures;
 
-  std::unordered_map<std::type_index, System*> systems;
+  std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
   std::set<Entity> entities_to_add;
   std::set<Entity> entities_to_remove;
 };
@@ -198,12 +198,12 @@ void Registry::add_component(Entity entity, TArgs&& ...args) {
   
   // If we don't have a pool for that comp type, make it
   if (!component_pool[component_id]) {
-    Pool<T_component>* new_comp_pool = new Pool<T_component>();
+    auto new_comp_pool = std::make_shared<Pool<T_component>>();
     component_pool[component_id] = new_comp_pool;
   }
 
   // get the pool of comp values for that comp type
-  Pool<T_component>* current_comp_pool = component_pool[component_id];
+  auto current_comp_pool = std::static_pointer_cast<Pool<T_component>>(component_pool[component_id]);
 
   if (entity_id >= current_comp_pool->get_size())
     current_comp_pool->resize(total_num_of_entities);
@@ -241,7 +241,7 @@ bool Registry::has_component(Entity entity) const {
 
 template <typename T_system, typename ...T_Args>
 void Registry::add_system(T_Args&& ...T_args) {
-  T_system* new_system(new T_system(std::forward<T_Args>(T_args)...));
+  auto new_system = std::make_shared<T_system>(std::forward<T_Args>(T_args)...);
   systems.insert(std::make_pair(std::type_index(typeid(T_system)), new_system));
 }
 
