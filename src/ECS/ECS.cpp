@@ -22,19 +22,18 @@ const Signature& System::get_component_signature() const { return component_sign
 Entity Registry::create_entity() {
   uint32_t entity_id = total_num_of_entities++;
   Entity new_entity(entity_id);
-  
   entities_to_add.insert(new_entity);
+
+  if (entity_id >= entity_component_signatures.size())
+    entity_component_signatures.resize(entity_id + 1);
+
   Logger::Log("Entity with ID [" + std::to_string(entity_id) + "] created!");
 
   return new_entity;
 }
 
-void Registry::update() {
-
-}
-
 void Registry::add_entity_to_system(Entity entity) {
-  const auto& entity_id = entity.get_entity_id();
+  const auto entity_id = entity.get_entity_id();
   const auto& entity_component_signature = entity_component_signatures[entity_id];
 
   for (auto& sys: systems) {
@@ -44,4 +43,11 @@ void Registry::add_entity_to_system(Entity entity) {
     if (will_accept)
       sys.second->add_entity_to_system(entity);
   }
+}
+
+void Registry::update() {
+  for (auto entity: entities_to_add)
+    add_entity_to_system(entity);
+
+  entities_to_add.clear();
 }
