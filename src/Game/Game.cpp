@@ -8,6 +8,7 @@
 
 Game::Game() {
   is_running = false;
+  registry = new Registry();
   Logger::Log("Game Constructor Called");
 }
 
@@ -16,10 +17,8 @@ Game::~Game() {
 }
 
 void Game::Setup() {
-  // TODO: Entity tank = Registry.create_entity();
-  // tank.add_component<transform_component>();
-  // tank.add_component<box_collider_component>();
-  // tank.add_component<sprite_component>("./path/to/image");
+  Entity tank = registry->create_entity();
+  Entity truck = registry->create_entity();
 }
 
 void Game::Update() {
