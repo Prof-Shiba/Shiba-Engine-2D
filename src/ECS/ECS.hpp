@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <bitset>
 #include <memory>
+#include <string>
 #include <typeindex>
 #include <unordered_map>
 #include <utility>
@@ -35,12 +36,7 @@ public:
   ~Component() = default;
   Component(const Component&) = default;
 
-  uint8_t get_component_id() const;
-
-private:
-  uint8_t component_id;
-  // returns unique id of comp <T>
-  static uint8_t get_id() {
+  static uint8_t get_component_id() {
     static auto id = next_id++;
     return id;
   }
@@ -215,6 +211,8 @@ void Registry::add_component(Entity entity, TArgs&& ...args) {
 
   // Update the comp sig of the entity and set comp id on bitset to 1
   entity_component_signatures[entity_id].set(component_id);
+
+  Logger::Log("Component with ID [" + std::to_string(component_id) + "] added to Entity ID [" + std::to_string(entity_id) + "]");
 }
 
 template <typename T_component>
