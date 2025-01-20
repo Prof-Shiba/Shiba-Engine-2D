@@ -63,6 +63,13 @@ public:
   bool operator=(const Entity& other) const { return entity_id == other.get_entity_id(); }
   bool operator!=(const Entity& other) const { return entity_id != other.get_entity_id(); }
 
+  class Registry* registry;
+
+  template <typename T_component, typename ...T_args> void add_component(T_args&& ...args);
+  template <typename T_component> void remove_component();
+  template <typename T_component> bool has_component() const;
+  template <typename T_component> T_component& get_component() const;
+
   uint32_t get_entity_id() const;
 
 private:
@@ -147,6 +154,7 @@ public:
   template <typename T_component, typename ...T_Args> void add_component(Entity entity, T_Args&& ...T_args);
   template <typename T_component> void remove_component(Entity entity);
   template <typename T_component> bool has_component(Entity entity) const;
+  template <typename T_component> T_component& get_component(Entity entity) const;
 
   // System management
   template <typename T_system, typename ...T_Args> void add_system(T_Args&& ...T_args);
@@ -239,6 +247,15 @@ bool Registry::has_component(Entity entity) const {
   return entity_component_signatures[entity_id].test(component_id);
 }
 
+template <typename T_component>
+T_component& Registry::get_component(Entity entity) const {
+  const auto component_id = Component<T_component>::get_component_id();
+  const auto entity_id = entity.get_entity_id();
+
+  auto comp_pool = std::static_pointer_cast<Pool<T_component>>(component_pool[component_id]);
+  return comp_pool->get(entity_id);
+}
+
 template <typename T_system, typename ...T_Args>
 void Registry::add_system(T_Args&& ...T_args) {
   auto new_system = std::make_shared<T_system>(std::forward<T_Args>(T_args)...);
@@ -260,4 +277,24 @@ template <typename T_system>
 T_system& Registry::get_system() const {
   auto system = systems.find(std::type_index(typeid(T_system)));
   return *(std::static_pointer_cast<T_system>(system->second));
+}
+
+template <typename T_component, typename ...T_Args>
+void Entity::add_component(T_Args&& ...args) {
+ // TODO:
+}
+
+template <typename T_component>
+void Entity::remove_component() {
+ // TODO:
+}
+
+template <typename T_component>
+bool Entity::has_component() const {
+ // TODO:
+}
+
+template <typename T_component>
+T_component& Entity::get_component() const {
+ // TODO:
 }
