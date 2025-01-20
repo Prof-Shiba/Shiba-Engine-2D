@@ -22,6 +22,7 @@ const Signature& System::get_component_signature() const { return component_sign
 Entity Registry::create_entity() {
   uint32_t entity_id = total_num_of_entities++;
   Entity new_entity(entity_id);
+  new_entity.registry = this;
   entities_to_add.insert(new_entity);
 
   if (entity_id >= entity_component_signatures.size())
