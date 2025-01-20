@@ -57,9 +57,11 @@ public:
   Entity(uint32_t id) : entity_id{id} {}
   ~Entity() = default;
   Entity(const Entity&) = default;
-  bool operator<(const Entity& other) const {
-    return entity_id < other.get_entity_id();
-  }
+
+  bool operator<(const Entity& other) const { return entity_id < other.get_entity_id(); }
+  bool operator>(const Entity& other) const { return entity_id > other.get_entity_id(); }
+  bool operator=(const Entity& other) const { return entity_id == other.get_entity_id(); }
+  bool operator!=(const Entity& other) const { return entity_id != other.get_entity_id(); }
 
   uint32_t get_entity_id() const;
 
