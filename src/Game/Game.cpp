@@ -24,8 +24,15 @@ Game::~Game() {
 void Game::Setup() {
   Entity tank = registry->create_entity();
 
-  registry->add_component<TransformComponent>(tank, glm::vec2(10, 10), glm::vec2(1.0, 1.0), 0.0);
-  registry->add_component<RigidBodyComponent>(tank, glm::vec2(10.0, 0.0));
+  tank.add_component<TransformComponent>(glm::vec2(10, 10), glm::vec2(1.0, 1.0), 0.0);
+  tank.add_component<RigidBodyComponent>(glm::vec2(10.0, 0.0));
+
+  // Should work
+  tank.remove_component<TransformComponent>();
+  tank.remove_component<RigidBodyComponent>();
+
+  // Should throw logger error
+  tank.remove_component<RigidBodyComponent>();
 }
 
 void Game::Update() {
