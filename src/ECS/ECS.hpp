@@ -58,9 +58,10 @@ public:
   ~Entity() = default;
   Entity(const Entity&) = default;
 
+  Entity& operator=(const Entity& other) = default;
   bool operator<(const Entity& other) const { return entity_id < other.get_entity_id(); }
   bool operator>(const Entity& other) const { return entity_id > other.get_entity_id(); }
-  bool operator=(const Entity& other) const { return entity_id == other.get_entity_id(); }
+  bool operator==(const Entity& other) const { return entity_id == other.get_entity_id(); }
   bool operator!=(const Entity& other) const { return entity_id != other.get_entity_id(); }
 
   class Registry* registry;
