@@ -64,6 +64,8 @@ public:
   bool operator==(const Entity& other) const { return entity_id == other.get_entity_id(); }
   bool operator!=(const Entity& other) const { return entity_id != other.get_entity_id(); }
 
+  // Each entity can hold a pointer to it's registry owner
+  // giving access to registry methods directly
   class Registry* registry;
 
   template <typename T_component, typename ...T_args> void add_component(T_args&& ...args);
@@ -228,15 +230,16 @@ void Registry::add_component(Entity entity, TArgs&& ...args) {
 
 template <typename T_component>
 void Registry::remove_component(Entity entity) {
+  const auto component_id = Component<T_component>::get_component_id();
+  const auto entity_id = entity.get_entity_id();
+
   if (has_component<T_component>(entity)) {
-    const auto component_id = Component<T_component>::get_component_id();
-    const auto entity_id = entity.get_entity_id();
 
     entity_component_signatures[entity_id].set(component_id, false);
-    Logger::Log("Removed component successfully!");
+    Logger::Log("Removed component [" + std::to_string(component_id) + "] successfully from Entity ID [" + std::to_string(entity_id) + "]!");
     } 
   else {
-    Logger::Err("Failed removing component! Entity is missing component!");
+    Logger::Err("Failed removing component with ID [" + std::to_string(component_id) + "] from Entity with ID [" + std::to_string(entity_id) + "]. Entity is missing component!");
   }
 }
 
@@ -282,20 +285,20 @@ T_system& Registry::get_system() const {
 
 template <typename T_component, typename ...T_Args>
 void Entity::add_component(T_Args&& ...args) {
- // TODO:
+  registry->add_component<T_component>(*this, std::forward<T_Args>(args)...);
 }
 
 template <typename T_component>
 void Entity::remove_component() {
- // TODO:
+    registry->remove_component<T_component>(*this);
 }
 
 template <typename T_component>
 bool Entity::has_component() const {
- // TODO:
+  return registry->has_component<T_component>(*this);
 }
 
 template <typename T_component>
 T_component& Entity::get_component() const {
- // TODO:
+  return registry->get_component<T_component>(*this);
 }
