@@ -3,7 +3,7 @@
 
 Made purely for fun and as a learning experience.
 
-Compile, Run, and delete the executable with:
-make
-make run
-make clean
+Compile, Run, and Delete the executable with:
+make,
+make run,
+make clean.
