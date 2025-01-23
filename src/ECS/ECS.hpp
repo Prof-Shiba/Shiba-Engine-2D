@@ -130,7 +130,7 @@ public:
   T& operator[](size_t index) { return data[index]; }
 
 private:
-  std::vector<T> data;    
+  std::vector<T> data;
 };
 
 ///////////////////////////////////////////////////////////////
@@ -228,12 +228,12 @@ void Registry::add_component(Entity entity, TArgs&& ...args) {
 template <typename T_component>
 void Registry::remove_component(Entity entity) {
   if (has_component<T_component>(entity)) {
-  const auto component_id = Component<T_component>::get_component_id();
-  const auto entity_id = entity.get_entity_id();
+    const auto component_id = Component<T_component>::get_component_id();
+    const auto entity_id = entity.get_entity_id();
 
-  entity_component_signatures[entity_id].set(component_id, false);
-  Logger::Log("Removed component successfully!");
-  } 
+    entity_component_signatures[entity_id].set(component_id, false);
+    Logger::Log("Removed component successfully!");
+    } 
   else {
     Logger::Err("Failed removing component! Entity is missing component!");
   }

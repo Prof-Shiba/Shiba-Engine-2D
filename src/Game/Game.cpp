@@ -11,7 +11,9 @@
 
 Game::Game() {
   is_running = false;
+
   registry = std::make_unique<Registry>();
+
   Logger::Log("Game Constructor Called");
 }
 
