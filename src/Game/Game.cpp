@@ -8,6 +8,7 @@
 #include "Game.hpp"
 #include "../Components/TransformComponent.hpp"
 #include "../Components/RigidBodyComponent.hpp"
+#include "../Systems/MovementSystem.hpp"
 
 Game::Game() {
   is_running = false;
@@ -22,17 +23,14 @@ Game::~Game() {
 }
 
 void Game::Setup() {
+  // Systems
+  registry->add_system<MovementSystem>();
+
+  // Entities & Components
   Entity tank = registry->create_entity();
 
   tank.add_component<TransformComponent>(glm::vec2(10, 10), glm::vec2(1.0, 1.0), 0.0);
   tank.add_component<RigidBodyComponent>(glm::vec2(10.0, 0.0));
-
-  // Should work
-  tank.remove_component<TransformComponent>();
-  tank.remove_component<RigidBodyComponent>();
-
-  // Should throw logger error
-  tank.remove_component<RigidBodyComponent>();
 }
 
 void Game::Update() {
@@ -47,10 +45,10 @@ void Game::Update() {
   // Store current frame time
   ms_previous_frame = SDL_GetTicks();
 
-  // TODO: 
-  // Movement_System.update();
-  // Collision_System.update();
-  // etc
+  registry->get_system<MovementSystem>().Update(delta_time);
+
+  // Process entities that are waiting to be created/destroyed
+  registry->update();
 };
 
 void Game::Initialize() {
