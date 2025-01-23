@@ -145,8 +145,8 @@ private:
 ///////////////////////////////////////////////////////////////
 class Registry {
 public:
-  Registry() = default;
-  ~Registry() = default;
+  Registry() { Logger::Log("Registry Constructor called!"); }
+  ~Registry() { Logger::Log("Registry Destructor called!"); }
   Registry(const Registry&) = default;
 
   // Entity management
@@ -257,7 +257,7 @@ T_component& Registry::get_component(Entity entity) const {
   const auto entity_id = entity.get_entity_id();
 
   auto comp_pool = std::static_pointer_cast<Pool<T_component>>(component_pool[component_id]);
-  return comp_pool->get(entity_id);
+  return comp_pool->get_at_index(entity_id);
 }
 
 template <typename T_system, typename ...T_Args>
