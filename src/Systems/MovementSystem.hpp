@@ -2,7 +2,6 @@
 #include "../ECS/ECS.hpp"
 #include "../Components/RigidBodyComponent.hpp"
 #include "../Components/TransformComponent.hpp"
-#include "../Game/Game.hpp"
 
 class MovementSystem : public System {
 public:
