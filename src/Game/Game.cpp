@@ -8,7 +8,9 @@
 #include "Game.hpp"
 #include "../Components/TransformComponent.hpp"
 #include "../Components/RigidBodyComponent.hpp"
+#include "../Components/SpriteComponent.hpp"
 #include "../Systems/MovementSystem.hpp"
+#include "../Systems/RenderSystem.hpp"
 
 Game::Game() {
   is_running = false;
@@ -25,12 +27,14 @@ Game::~Game() {
 void Game::Setup() {
   // Systems
   registry->add_system<MovementSystem>();
+  registry->add_system<RenderSystem>();
 
   // Entities & Components
   Entity tank = registry->create_entity();
 
   tank.add_component<TransformComponent>(glm::vec2(10, 10), glm::vec2(1.0, 1.0), 0.0);
   tank.add_component<RigidBodyComponent>(glm::vec2(10.0, 0.0));
+  tank.add_component<SpriteComponent>(10, 10);
 }
 
 void Game::Update() {
@@ -49,6 +53,16 @@ void Game::Update() {
 
   // Process entities that are waiting to be created/destroyed
   registry->update();
+};
+
+void Game::Render() {
+  SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
+  SDL_RenderClear(renderer);
+  
+  registry->get_system<RenderSystem>().Update(renderer);
+
+  // Double buffer
+  SDL_RenderPresent(renderer);
 };
 
 void Game::Initialize() {
@@ -114,17 +128,6 @@ void Game::ProcessInput() {
         break;
     }
   }
-};
-
-
-void Game::Render() {
-  SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
-  SDL_RenderClear(renderer);
-  
-  // TODO: Render game objects
-
-  // Double buffer
-  SDL_RenderPresent(renderer);
 };
 
 void Game::Destroy() {
