@@ -30,21 +30,23 @@ void Game::Setup() {
   registry->add_system<MovementSystem>();
   registry->add_system<RenderSystem>();
 
-  asset_manager->add_texture(renderer, "tank-image", "../../assets/images/tank-tiger-right.png");
-  asset_manager->add_texture(renderer, "truck-image", "../../assets/images/truck-ford-right.png");
+  // The linker will find #includes properly, however, when using images etc you must do it from the
+  // makefiles perspective. It lives in the main dir, outside this /src/Game dir
+  asset_manager->add_texture(renderer, "tank-image", "./assets/images/tank-tiger-right.png");
+  asset_manager->add_texture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
 
   // Entities & Components
   Entity tank = registry->create_entity();
 
   // testing
   auto tank_position = glm::vec2(10, 10);
-  auto tank_scale = glm::vec2(1.0, 1.0);
+  auto tank_scale = glm::vec2(3.0, 3.0);
   auto tank_velocity = glm::vec2(50.0, 0.0);
-  float tank_rotation = 0.0;
+  float tank_rotation = 40.0;
 
   tank.add_component<TransformComponent>(tank_position, tank_scale, tank_rotation);
   tank.add_component<RigidBodyComponent>(tank_velocity);
-  tank.add_component<SpriteComponent>("tank-image", 10, 10); // width and height
+  tank.add_component<SpriteComponent>("tank-image", 32, 32); // imgs are 32px, width and height
 
   Entity truck = registry->create_entity();
 
@@ -56,7 +58,7 @@ void Game::Setup() {
 
   truck.add_component<TransformComponent>(truck_position, truck_scale, truck_rotation);
   truck.add_component<RigidBodyComponent>(truck_velocity);
-  truck.add_component<SpriteComponent>("truck-image", 30, 30);
+  truck.add_component<SpriteComponent>("truck-image", 32, 32);
 }
 
 void Game::Update() {
@@ -81,7 +83,7 @@ void Game::Render() {
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
   SDL_RenderClear(renderer);
   
-  registry->get_system<RenderSystem>().Update(renderer);
+  registry->get_system<RenderSystem>().Update(renderer, asset_manager);
 
   // Double buffer
   SDL_RenderPresent(renderer);
