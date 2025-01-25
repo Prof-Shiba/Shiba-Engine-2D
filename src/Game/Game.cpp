@@ -63,7 +63,7 @@ void Game::Setup() {
 
 void Game::Update() {
   // Yield resources to OS
-  Uint32 time_to_wait = MS_PER_FRAME - (SDL_GetTicks() - ms_previous_frame);
+  uint32_t time_to_wait = MS_PER_FRAME - (SDL_GetTicks() - ms_previous_frame);
   if (time_to_wait > 0 && time_to_wait <= MS_PER_FRAME)
     SDL_Delay(time_to_wait);
  

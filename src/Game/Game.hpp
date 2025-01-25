@@ -7,9 +7,9 @@
 #include "../ECS/ECS.hpp"
 #include "../AssetManager/AssetManager.hpp"
 
-const Uint16 FPS = 144;
+const uint16_t FPS = 144;
 // 1000ms -> 1 second. Each frame should take 16.6 repeating ms
-const Uint16 MS_PER_FRAME = 1000 / FPS;
+const uint16_t MS_PER_FRAME = 1000 / FPS;
 const int8_t DEFAULT_MONITOR_NUMBER = -1;
 
 class Game {
@@ -24,8 +24,8 @@ public:
   void Render();
   void Destroy();
 
-  Uint16 WIDTH;
-  Uint16 HEIGHT;
+  uint16_t WIDTH;
+  uint16_t HEIGHT;
   bool is_running;
 
 private:
