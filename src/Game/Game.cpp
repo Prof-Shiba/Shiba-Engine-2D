@@ -32,9 +32,27 @@ void Game::Setup() {
   // Entities & Components
   Entity tank = registry->create_entity();
 
-  tank.add_component<TransformComponent>(glm::vec2(10, 10), glm::vec2(1.0, 1.0), 0.0);
-  tank.add_component<RigidBodyComponent>(glm::vec2(10.0, 0.0));
-  tank.add_component<SpriteComponent>(10, 10);
+  // testing
+  auto tank_position = glm::vec2(10, 10);
+  auto tank_scale = glm::vec2(1.0, 1.0);
+  auto tank_velocity = glm::vec2(50.0, 0.0);
+  float tank_rotation = 0.0;
+
+  tank.add_component<TransformComponent>(tank_position, tank_scale, tank_rotation);
+  tank.add_component<RigidBodyComponent>(tank_velocity);
+  tank.add_component<SpriteComponent>(10, 10); // width and height
+
+  Entity square = registry->create_entity();
+
+  // testing
+  auto square_position = glm::vec2(90, 120);
+  auto square_scale = glm::vec2(1.0, 1.0);
+  auto square_velocity = glm::vec2(30.0, 30.0);
+  float square_rotation = 0.0;
+
+  square.add_component<TransformComponent>(square_position, square_scale, square_rotation);
+  square.add_component<RigidBodyComponent>(square_velocity);
+  square.add_component<SpriteComponent>(30, 30);
 }
 
 void Game::Update() {
