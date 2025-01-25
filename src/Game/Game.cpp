@@ -16,6 +16,7 @@ Game::Game() {
   is_running = false;
 
   registry = std::make_unique<Registry>();
+  asset_manager = std::make_unique<AssetManager>();
 
   Logger::Log("Game Constructor Called");
 }
@@ -29,6 +30,9 @@ void Game::Setup() {
   registry->add_system<MovementSystem>();
   registry->add_system<RenderSystem>();
 
+  asset_manager->add_texture(renderer, "tank-image", "../../assets/images/tank-tiger-right.png");
+  asset_manager->add_texture(renderer, "truck-image", "../../assets/images/truck-ford-right.png");
+
   // Entities & Components
   Entity tank = registry->create_entity();
 
@@ -40,19 +44,19 @@ void Game::Setup() {
 
   tank.add_component<TransformComponent>(tank_position, tank_scale, tank_rotation);
   tank.add_component<RigidBodyComponent>(tank_velocity);
-  tank.add_component<SpriteComponent>(10, 10); // width and height
+  tank.add_component<SpriteComponent>("tank-image", 10, 10); // width and height
 
-  Entity square = registry->create_entity();
+  Entity truck = registry->create_entity();
 
   // testing
-  auto square_position = glm::vec2(90, 120);
-  auto square_scale = glm::vec2(1.0, 1.0);
-  auto square_velocity = glm::vec2(30.0, 30.0);
-  float square_rotation = 0.0;
+  auto truck_position = glm::vec2(90, 120);
+  auto truck_scale = glm::vec2(1.0, 1.0);
+  auto truck_velocity = glm::vec2(30.0, 30.0);
+  float truck_rotation = 0.0;
 
-  square.add_component<TransformComponent>(square_position, square_scale, square_rotation);
-  square.add_component<RigidBodyComponent>(square_velocity);
-  square.add_component<SpriteComponent>(30, 30);
+  truck.add_component<TransformComponent>(truck_position, truck_scale, truck_rotation);
+  truck.add_component<RigidBodyComponent>(truck_velocity);
+  truck.add_component<SpriteComponent>("truck-image", 30, 30);
 }
 
 void Game::Update() {
