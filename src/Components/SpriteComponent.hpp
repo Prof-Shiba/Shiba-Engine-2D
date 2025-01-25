@@ -2,10 +2,10 @@
 #include <cstdint>
 
 struct SpriteComponent {
-  uint8_t width;
-  uint8_t height;
+  uint16_t width;
+  uint16_t height;
 
-  SpriteComponent(uint8_t width = 5, uint8_t height = 5) 
+  SpriteComponent(uint16_t width = 0, uint16_t height = 0) 
     : width{width}, height{height} {
   }
 };
