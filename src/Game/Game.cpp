@@ -25,7 +25,7 @@ Game::~Game() {
   Logger::Log("Game Destructor Called");
 }
 
-void Game::Setup() {
+void Game::LoadLevel(int level) {
   // Systems
   registry->add_system<MovementSystem>();
   registry->add_system<RenderSystem>();
@@ -34,6 +34,12 @@ void Game::Setup() {
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
   asset_manager->add_texture(renderer, "tank-image", "./assets/images/tank-tiger-right.png");
   asset_manager->add_texture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
+
+  // Tilemap
+  asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
+  // TODO: Read map file and create tile entities based on jungle-tilemap
+  // Read jungle.map file
+  // One entity per tile
 
   // Entities & Components
   Entity tank = registry->create_entity();
@@ -50,7 +56,6 @@ void Game::Setup() {
 
   Entity truck = registry->create_entity();
 
-  // testing
   auto truck_position = glm::vec2(90, 120);
   auto truck_scale = glm::vec2(1.0, 1.0);
   auto truck_velocity = glm::vec2(30.0, 30.0);
@@ -59,6 +64,10 @@ void Game::Setup() {
   truck.add_component<TransformComponent>(truck_position, truck_scale, truck_rotation);
   truck.add_component<RigidBodyComponent>(truck_velocity);
   truck.add_component<SpriteComponent>("truck-image", 32, 32);
+}
+
+void Game::Setup() {
+  LoadLevel(1);
 }
 
 void Game::Update() {
