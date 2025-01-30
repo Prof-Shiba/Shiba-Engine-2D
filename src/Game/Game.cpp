@@ -1,7 +1,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
+#include <cstdint>
+#include <cstdlib>
 #include <memory>
+#include <fstream>
+#include <sstream>
+#include <string>
 #include "../ECS/ECS.hpp"
 #include "../../libs/glm/glm.hpp"
 #include "../Logger/Logger.hpp"
@@ -35,11 +40,38 @@ void Game::LoadLevel(int level) {
   asset_manager->add_texture(renderer, "tank-image", "./assets/images/tank-tiger-right.png");
   asset_manager->add_texture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
 
-  // Tilemap
   asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
-  // TODO: Read map file and create tile entities based on jungle-tilemap
-  // Read jungle.map file
-  // One entity per tile
+
+  // TODO: refactor this
+  // why is it taking 3 seconds to launch?
+  // this adds another second of launch time. 2s w/o this.
+  std::ifstream in_file {"./assets/tilemaps/jungle.map"};
+  std::string line;
+
+  const uint8_t TILE_SIZE = 32;
+  uint8_t number_of_map_cols = 25;
+  uint8_t number_of_map_rows = 20;
+  float tile_scale = 2.0;
+
+  for (int y = 0; y < number_of_map_rows; y++) {
+    for (int x = 0; x < number_of_map_cols; x++) {
+      char ch;
+
+      in_file.get(ch);
+      uint32_t src_rect_y = std::atoi(&ch) * TILE_SIZE;
+
+      in_file.get(ch);
+      uint32_t src_rect_x = std::atoi(&ch) * TILE_SIZE;
+
+      in_file.ignore();
+
+      Entity map_tile = registry->create_entity();
+      map_tile.add_component<TransformComponent>(glm::vec2(x * (tile_scale * TILE_SIZE), y * (tile_scale * TILE_SIZE)), glm::vec2(tile_scale, tile_scale), 0.0);
+      map_tile.add_component<SpriteComponent>("jungle-tilemap", TILE_SIZE, TILE_SIZE, src_rect_x, src_rect_y);
+    }
+  }
+
+  in_file.close();
 
   // Entities & Components
   Entity tank = registry->create_entity();
