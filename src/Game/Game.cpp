@@ -40,10 +40,8 @@ void Game::LoadLevel(int level) {
   asset_manager->add_texture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
   asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
 
-  // TODO: refactor this
-  // why is it taking 3 seconds to launch?
-  // this adds another second of launch time. 2s w/o this.
-  // possibly due to use of templates?
+  // This adds a full second of run time
+  // 3 seconds total :(
   const uint8_t TILE_SIZE = 32;
   uint8_t number_of_map_cols = 25;
   uint8_t number_of_map_rows = 20;
@@ -65,7 +63,7 @@ void Game::LoadLevel(int level) {
 
         Entity map_tile = registry->create_entity();
         map_tile.add_component<TransformComponent>(glm::vec2(x * (tile_scale * TILE_SIZE), y * (tile_scale * TILE_SIZE)), glm::vec2(tile_scale, tile_scale), 0.0);
-        map_tile.add_component<SpriteComponent>("jungle-tilemap", TILE_SIZE, TILE_SIZE, src_rect_x, src_rect_y);
+        map_tile.add_component<SpriteComponent>("jungle-tilemap", TILE_SIZE, TILE_SIZE, 0, src_rect_x, src_rect_y);
       }
     }
   } else {
@@ -77,26 +75,15 @@ void Game::LoadLevel(int level) {
   // Entities & Components
   Entity tank = registry->create_entity();
 
-  // testing
-  auto tank_position = glm::vec2(10, 10);
-  auto tank_scale = glm::vec2(3.0, 3.0);
-  auto tank_velocity = glm::vec2(50.0, 0.0);
-  float tank_rotation = 40.0;
-
-  tank.add_component<TransformComponent>(tank_position, tank_scale, tank_rotation);
-  tank.add_component<RigidBodyComponent>(tank_velocity);
-  tank.add_component<SpriteComponent>("tank-image", 32, 32); // imgs are 32px, width and height
+  tank.add_component<TransformComponent>(glm::vec2(10, 10), glm::vec2(3.0, 3.0), 40.0);
+  tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
+  tank.add_component<SpriteComponent>("tank-image", 2, 32, 32); // imgs are 32px, width and height
 
   Entity truck = registry->create_entity();
 
-  auto truck_position = glm::vec2(90, 120);
-  auto truck_scale = glm::vec2(1.0, 1.0);
-  auto truck_velocity = glm::vec2(30.0, 30.0);
-  float truck_rotation = 0.0;
-
-  truck.add_component<TransformComponent>(truck_position, truck_scale, truck_rotation);
-  truck.add_component<RigidBodyComponent>(truck_velocity);
-  truck.add_component<SpriteComponent>("truck-image", 32, 32);
+  truck.add_component<TransformComponent>(glm::vec2(90, 120), glm::vec2(1.0, 1.0), 0.0);
+  truck.add_component<RigidBodyComponent>(glm::vec2(30.0, 30.0));
+  truck.add_component<SpriteComponent>("truck-image", 1, 32, 32);
 }
 
 void Game::Setup() {
