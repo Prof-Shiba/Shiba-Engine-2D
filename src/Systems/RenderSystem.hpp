@@ -19,6 +19,9 @@ public:
   ~RenderSystem() = default;
 
   void Update(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& asset_manager) {
+    // TODO: Sort by Z-index inside here, see how badly it impacts performance and
+    // if another method should be used instead for the purposes of this project
+
     for (auto entity: get_system_entities()) {
       const auto transform = entity.get_component<TransformComponent>();
       const auto sprite = entity.get_component<SpriteComponent>();
