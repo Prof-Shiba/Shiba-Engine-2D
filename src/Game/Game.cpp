@@ -40,8 +40,6 @@ void Game::LoadLevel(int level) {
   asset_manager->add_texture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
   asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
 
-  // This adds a full second of run time
-  // 3 seconds total :(
   const uint8_t TILE_SIZE = 32;
   uint8_t number_of_map_cols = 25;
   uint8_t number_of_map_rows = 20;
@@ -110,7 +108,7 @@ void Game::Render() {
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
   SDL_RenderClear(renderer);
   
-  registry->get_system<RenderSystem>().Update(renderer, asset_manager); // NOTE:
+  registry->get_system<RenderSystem>().Update(renderer, asset_manager);
 
   // Double buffer
   SDL_RenderPresent(renderer);
