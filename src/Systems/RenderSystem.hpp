@@ -19,19 +19,21 @@ public:
   RenderSystem(const RenderSystem&) = default;
   ~RenderSystem() = default;
 
+  /* TODO: In future have layers, background layer, foreground, HUD, etc */
+  /* then perhaps i can render each one, some every frame, some once. starting from the background */
+  /* and they have their own z_index globally, with each one having its own seperate z_index inside */
+
   // I hate sorting here. I will change it later, but I just want to get a feel
   // for how doing it works first.
   void Update(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& asset_manager) {
-    // for every entity in get_system_entities ?
-    // sort by the lowest z_index
-    // NOTE: Can i even do that? The question is:
-    // how can i get all the entity IDs in get_system_entities
-    // and sort by the lowest, or can i even do that to begin with?
-    for (auto& entity: get_system_entities()) {
-      uint8_t z = entity.get_component<SpriteComponent>().z_index;
-    }
+    auto entities = get_system_entities();
 
-    for (auto entity: get_system_entities()) {
+    // NOTE: This line below is making the z-index irrelevant, and the
+    // background always draws first, regardless of anything else
+    
+    /*std::sort(entities.begin(), entities.end(), [](Entity lhs, Entity rhs) { return lhs.get_component<SpriteComponent>().z_index < rhs.get_component<SpriteComponent>().z_index; });*/
+
+    for (auto& entity: entities) {
       const auto transform = entity.get_component<TransformComponent>();
       const auto sprite = entity.get_component<SpriteComponent>();
 
