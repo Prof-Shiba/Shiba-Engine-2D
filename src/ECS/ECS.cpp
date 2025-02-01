@@ -34,7 +34,7 @@ Entity Registry::create_entity() {
 }
 
 void Registry::add_entity_to_system(Entity entity) {
-  const auto entity_id = entity.get_entity_id();
+  const auto& entity_id = entity.get_entity_id();
   const auto& entity_component_signature = entity_component_signatures[entity_id];
 
   for (auto& sys: systems) {
@@ -47,7 +47,7 @@ void Registry::add_entity_to_system(Entity entity) {
 }
 
 void Registry::update() {
-  for (auto entity: entities_to_add)
+  for (auto& entity: entities_to_add)
     add_entity_to_system(entity);
 
   entities_to_add.clear();
