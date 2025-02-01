@@ -74,16 +74,14 @@ void Game::LoadLevel(int level) {
 
   // Entities & Components
   Entity tank = registry->create_entity();
-
   tank.add_component<TransformComponent>(glm::vec2(10, 10), glm::vec2(3.0, 3.0), 40.0);
   tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
-  tank.add_component<SpriteComponent>("tank-image", 32, 32, 2); // imgs are 32px, width and height
+  tank.add_component<SpriteComponent>("tank-image", 32, 32, 2); // imgs are 32px, width and height, then z-index
 
   Entity truck = registry->create_entity();
-
-  truck.add_component<TransformComponent>(glm::vec2(90, 120), glm::vec2(1.0, 1.0), 0.0);
-  truck.add_component<RigidBodyComponent>(glm::vec2(30.0, 30.0));
-  truck.add_component<SpriteComponent>("truck-image", 32, 32, 2);
+  truck.add_component<TransformComponent>(glm::vec2(30, 10), glm::vec2(1.0, 1.0), 0.0);
+  truck.add_component<RigidBodyComponent>(glm::vec2(50.0, 00.0));
+  truck.add_component<SpriteComponent>("truck-image", 32, 32, 1);
 }
 
 void Game::Setup() {
@@ -112,7 +110,7 @@ void Game::Render() {
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
   SDL_RenderClear(renderer);
   
-  registry->get_system<RenderSystem>().Update(renderer, asset_manager);
+  registry->get_system<RenderSystem>().Update(renderer, asset_manager); // NOTE:
 
   // Double buffer
   SDL_RenderPresent(renderer);
