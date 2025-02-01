@@ -6,6 +6,7 @@
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include "../AssetManager/AssetManager.hpp"
+#include <algorithm>
 #include <memory>
 
 class RenderSystem : public System {
@@ -18,9 +19,17 @@ public:
   RenderSystem(const RenderSystem&) = default;
   ~RenderSystem() = default;
 
+  // I hate sorting here. I will change it later, but I just want to get a feel
+  // for how doing it works first.
   void Update(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& asset_manager) {
-    // TODO: Sort by Z-index inside here, see how badly it impacts performance and
-    // if another method should be used instead for the purposes of this project
+    // for every entity in get_system_entities ?
+    // sort by the lowest z_index
+    // NOTE: Can i even do that? The question is:
+    // how can i get all the entity IDs in get_system_entities
+    // and sort by the lowest, or can i even do that to begin with?
+    for (auto& entity: get_system_entities()) {
+      uint8_t z = entity.get_component<SpriteComponent>().z_index;
+    }
 
     for (auto entity: get_system_entities()) {
       const auto transform = entity.get_component<TransformComponent>();
