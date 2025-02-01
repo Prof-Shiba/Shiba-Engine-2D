@@ -63,7 +63,7 @@ void Game::LoadLevel(int level) {
 
         Entity map_tile = registry->create_entity();
         map_tile.add_component<TransformComponent>(glm::vec2(x * (tile_scale * TILE_SIZE), y * (tile_scale * TILE_SIZE)), glm::vec2(tile_scale, tile_scale), 0.0);
-        map_tile.add_component<SpriteComponent>("jungle-tilemap", TILE_SIZE, TILE_SIZE, 0, src_rect_x, src_rect_y);
+        map_tile.add_component<SpriteComponent>("jungle-tilemap", TILE_SIZE, TILE_SIZE, src_rect_x, src_rect_y, 0);
       }
     }
   } else {
@@ -77,13 +77,13 @@ void Game::LoadLevel(int level) {
 
   tank.add_component<TransformComponent>(glm::vec2(10, 10), glm::vec2(3.0, 3.0), 40.0);
   tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
-  tank.add_component<SpriteComponent>("tank-image", 2, 32, 32); // imgs are 32px, width and height
+  tank.add_component<SpriteComponent>("tank-image", 32, 32, 2); // imgs are 32px, width and height
 
   Entity truck = registry->create_entity();
 
   truck.add_component<TransformComponent>(glm::vec2(90, 120), glm::vec2(1.0, 1.0), 0.0);
   truck.add_component<RigidBodyComponent>(glm::vec2(30.0, 30.0));
-  truck.add_component<SpriteComponent>("truck-image", 1, 32, 32);
+  truck.add_component<SpriteComponent>("truck-image", 32, 32, 2);
 }
 
 void Game::Setup() {
