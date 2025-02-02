@@ -35,8 +35,8 @@ public:
     });
 
     for (auto& entity: entities) {
-      const auto transform = entity.get_component<TransformComponent>();
-      const auto sprite = entity.get_component<SpriteComponent>();
+      const auto& transform = entity.get_component<TransformComponent>();
+      const auto& sprite = entity.get_component<SpriteComponent>();
 
       // Set source rectangle of OG sprite texture, needed for RenderCopy
       SDL_Rect source_rect = sprite.src_rect;
