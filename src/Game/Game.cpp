@@ -74,12 +74,12 @@ void Game::LoadLevel(int level) {
   Entity tank = registry->create_entity();
   tank.add_component<TransformComponent>(glm::vec2(10, 10), glm::vec2(3.0, 3.0), 40.0);
   tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
-  tank.add_component<SpriteComponent>("tank-image", 32, 32, 2); // imgs are 32px, width and height, then z-index
+  tank.add_component<SpriteComponent>("tank-image", 32, 32, 0, 0, 2); // imgs are 32px, width and height, src rect x, src rect y, then z-index
 
   Entity truck = registry->create_entity();
   truck.add_component<TransformComponent>(glm::vec2(30, 10), glm::vec2(1.0, 1.0), 0.0);
   truck.add_component<RigidBodyComponent>(glm::vec2(50.0, 00.0));
-  truck.add_component<SpriteComponent>("truck-image", 32, 32, 1);
+  truck.add_component<SpriteComponent>("truck-image", 32, 32, 0, 0, 1);
 }
 
 void Game::Setup() {
