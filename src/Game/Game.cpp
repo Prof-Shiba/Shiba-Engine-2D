@@ -13,8 +13,11 @@
 #include "../Components/TransformComponent.hpp"
 #include "../Components/RigidBodyComponent.hpp"
 #include "../Components/SpriteComponent.hpp"
+#include "../Components/AnimationComponent.hpp"
 #include "../Systems/MovementSystem.hpp"
 #include "../Systems/RenderSystem.hpp"
+#include "../Systems/AnimationSystem.hpp"
+
 
 Game::Game() {
   is_running = false;
@@ -33,11 +36,14 @@ void Game::LoadLevel(int level) {
   // Systems
   registry->add_system<MovementSystem>();
   registry->add_system<RenderSystem>();
+  registry->add_system<AnimationSystem>();
 
   // The linker will find #includes properly, however, when using images etc you must do it from the
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
   asset_manager->add_texture(renderer, "tank-image", "./assets/images/tank-tiger-right.png");
   asset_manager->add_texture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
+  asset_manager->add_texture(renderer, "helicopter-image", "./assets/images/chopper.png");
+  asset_manager->add_texture(renderer, "radar-image", "./assets/images/radar.png");
   asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
 
   const uint8_t TILE_SIZE = 32;
@@ -71,13 +77,25 @@ void Game::LoadLevel(int level) {
   in_file.close();
 
   // Entities & Components
+  Entity helicopter = registry->create_entity();
+  helicopter.add_component<TransformComponent>(glm::vec2(50, 90), glm::vec2(2.0, 2.0), 0.0);
+  helicopter.add_component<RigidBodyComponent>(glm::vec2(100.0, 0.0));
+  helicopter.add_component<SpriteComponent>("helicopter-image", 32, 32, 0, 0, 3);
+  helicopter.add_component<AnimationComponent>(2, 10, true);
+
+  Entity radar = registry->create_entity();
+  radar.add_component<TransformComponent>(glm::vec2(50, 100), glm::vec2(2.0, 2.0), 0.0);
+  radar.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
+  radar.add_component<SpriteComponent>("radar-image", 64, 64, 0, 0, 4);
+  radar.add_component<AnimationComponent>(8, 5, true);
+
   Entity tank = registry->create_entity();
-  tank.add_component<TransformComponent>(glm::vec2(10, 10), glm::vec2(3.0, 3.0), 40.0);
+  tank.add_component<TransformComponent>(glm::vec2(10, 10), glm::vec2(2.0, 2.0), 0.0);
   tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
   tank.add_component<SpriteComponent>("tank-image", 32, 32, 0, 0, 2); // imgs are 32px, width and height, src rect x, src rect y, then z-index
 
   Entity truck = registry->create_entity();
-  truck.add_component<TransformComponent>(glm::vec2(30, 10), glm::vec2(1.0, 1.0), 0.0);
+  truck.add_component<TransformComponent>(glm::vec2(90, 40), glm::vec2(2.0, 2.0), 0.0);
   truck.add_component<RigidBodyComponent>(glm::vec2(50.0, 00.0));
   truck.add_component<SpriteComponent>("truck-image", 32, 32, 0, 0, 1);
 }
@@ -99,6 +117,7 @@ void Game::Update() {
   ms_previous_frame = SDL_GetTicks();
 
   registry->get_system<MovementSystem>().Update(delta_time);
+  registry->get_system<AnimationSystem>().Update();
 
   // Process entities that are waiting to be created/destroyed
   registry->update();
