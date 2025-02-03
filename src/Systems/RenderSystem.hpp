@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <cstdlib>
 #include <memory>
-#include <string>
 
 class RenderSystem : public System {
 public:
