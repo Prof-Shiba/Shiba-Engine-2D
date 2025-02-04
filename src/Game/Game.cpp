@@ -14,9 +14,11 @@
 #include "../Components/RigidBodyComponent.hpp"
 #include "../Components/SpriteComponent.hpp"
 #include "../Components/AnimationComponent.hpp"
+#include "../Components/BoxColliderComponent.hpp"
 #include "../Systems/MovementSystem.hpp"
 #include "../Systems/RenderSystem.hpp"
 #include "../Systems/AnimationSystem.hpp"
+#include "../Systems/CollisionSystem.hpp"
 
 
 Game::Game() {
@@ -37,6 +39,7 @@ void Game::LoadLevel(int level) {
   registry->add_system<MovementSystem>();
   registry->add_system<RenderSystem>();
   registry->add_system<AnimationSystem>();
+  registry->add_system<CollisionSystem>();
 
   // The linker will find #includes properly, however, when using images etc you must do it from the
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
@@ -90,14 +93,16 @@ void Game::LoadLevel(int level) {
   radar.add_component<AnimationComponent>(8, 5, true);
 
   Entity tank = registry->create_entity();
-  tank.add_component<TransformComponent>(glm::vec2(10, 10), glm::vec2(2.0, 2.0), 0.0);
+  tank.add_component<TransformComponent>(glm::vec2(100, 10), glm::vec2(2.0, 2.0), 0.0);
   tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
   tank.add_component<SpriteComponent>("tank-image", 32, 32, 0, 0, 2); // imgs are 32px, width and height, src rect x, src rect y, then z-index
+  tank.add_component<BoxColliderComponent>(32, 32);
 
   Entity truck = registry->create_entity();
-  truck.add_component<TransformComponent>(glm::vec2(90, 40), glm::vec2(2.0, 2.0), 0.0);
-  truck.add_component<RigidBodyComponent>(glm::vec2(50.0, 00.0));
+  truck.add_component<TransformComponent>(glm::vec2(300, 10), glm::vec2(2.0, 2.0), 0.0);
+  truck.add_component<RigidBodyComponent>(glm::vec2(-50.0, 00.0));
   truck.add_component<SpriteComponent>("truck-image", 32, 32, 0, 0, 1);
+  truck.add_component<BoxColliderComponent>(32, 32);
 }
 
 void Game::Setup() {
@@ -118,6 +123,7 @@ void Game::Update() {
 
   registry->get_system<MovementSystem>().Update(delta_time);
   registry->get_system<AnimationSystem>().Update();
+  registry->get_system<CollisionSystem>().Update();
 
   // Process entities that are waiting to be created/destroyed
   registry->update();
