@@ -2,7 +2,6 @@
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
 #include <cstdint>
-#include <cstdlib>
 #include <memory>
 #include <fstream>
 #include <string>
