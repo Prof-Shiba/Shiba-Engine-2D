@@ -24,15 +24,15 @@ public:
             auto& rhs_collider = rhs.get_component<BoxColliderComponent>();
             auto& rhs_transform = rhs.get_component<TransformComponent>();
 
-          if(transform.position.x < rhs_transform.position.x + rhs_collider.width &&
-              transform.position.x + collider.width > rhs_transform.position.x &&
-              transform.position.y < rhs_transform.position.y + rhs_collider.height &&
-              transform.position.y + collider.height > rhs_transform.position.y)
-                Logger::Warn("Collision Detected!");
+            if(transform.position.x < rhs_transform.position.x + rhs_collider.width &&
+                transform.position.x + collider.width > rhs_transform.position.x &&
+                transform.position.y < rhs_transform.position.y + rhs_collider.height &&
+                transform.position.y + collider.height > rhs_transform.position.y)
+                  Logger::Warn("Collision Detected!");
           }
         }
       }
-
     }
+
   }
 };
