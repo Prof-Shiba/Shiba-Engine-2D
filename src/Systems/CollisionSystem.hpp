@@ -16,12 +16,10 @@ public:
     auto entities = get_system_entities();
 
     for (auto i = entities.begin(); i != entities.end(); i++) {
-      if (i->has_component<BoxColliderComponent>()) {
         auto& collider = i->get_component<BoxColliderComponent>();
         auto& transform = i->get_component<TransformComponent>();
 
         for (auto j = i + 1; j != entities.end(); j++) {
-          if (j->has_component<BoxColliderComponent>()) {
             auto& rhs_collider = j->get_component<BoxColliderComponent>();
             auto& rhs_transform = j->get_component<TransformComponent>();
 
@@ -33,7 +31,4 @@ public:
           }
         }
       }
-    }
-
-  }
 };
