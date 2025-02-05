@@ -12,17 +12,18 @@ public:
   }
   ~CollisionSystem() = default;
 
-  // NOTE: Smelly
   void Update() {
-    for (auto& entity: get_system_entities()) {
-      if (entity.has_component<BoxColliderComponent>()) {
-        auto& collider = entity.get_component<BoxColliderComponent>();
-        auto& transform = entity.get_component<TransformComponent>();
+    auto entities = get_system_entities();
 
-        for (auto& rhs: get_system_entities()) {
-          if (rhs.has_component<BoxColliderComponent>() && rhs.get_entity_id() != entity.get_entity_id()) {
-            auto& rhs_collider = rhs.get_component<BoxColliderComponent>();
-            auto& rhs_transform = rhs.get_component<TransformComponent>();
+    for (auto i = entities.begin(); i != entities.end(); i++) {
+      if (i->has_component<BoxColliderComponent>()) {
+        auto& collider = i->get_component<BoxColliderComponent>();
+        auto& transform = i->get_component<TransformComponent>();
+
+        for (auto j = i + 1; j != entities.end(); j++) {
+          if (j->has_component<BoxColliderComponent>()) {
+            auto& rhs_collider = j->get_component<BoxColliderComponent>();
+            auto& rhs_transform = j->get_component<TransformComponent>();
 
             if(transform.position.x < rhs_transform.position.x + rhs_collider.width &&
                 transform.position.x + collider.width > rhs_transform.position.x &&
