@@ -97,7 +97,7 @@ void Game::LoadLevel(int level) {
   tank.add_component<TransformComponent>(glm::vec2(100, 10), glm::vec2(2.0, 2.0), 0.0);
   tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
   tank.add_component<SpriteComponent>("tank-image", 32, 32, 0, 0, 2); // imgs are 32px, width and height, src rect x, src rect y, then z-index
-  tank.add_component<BoxColliderComponent>(60, 60);
+  tank.add_component<BoxColliderComponent>(60, 60); // TODO: Fix offset. Currently does nothing.
 
   Entity truck = registry->create_entity();
   truck.add_component<TransformComponent>(glm::vec2(300, 10), glm::vec2(2.0, 2.0), 0.0);
