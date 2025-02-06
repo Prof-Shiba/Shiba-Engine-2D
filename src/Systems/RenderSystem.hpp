@@ -7,7 +7,6 @@
 #include <SDL2/SDL_render.h>
 #include "../AssetManager/AssetManager.hpp"
 #include <algorithm>
-#include <cstdlib>
 #include <memory>
 
 class RenderSystem : public System {
