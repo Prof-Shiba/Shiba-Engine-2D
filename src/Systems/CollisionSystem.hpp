@@ -2,7 +2,6 @@
 #include "../ECS/ECS.hpp"
 #include "../Components/BoxColliderComponent.hpp"
 #include "../Components/TransformComponent.hpp"
-#include "../Logger/Logger.hpp"
 
 class CollisionSystem : public System {
 public:
@@ -12,7 +11,7 @@ public:
   }
   ~CollisionSystem() = default;
 
-  void Update() {
+  void Update(bool& is_colliding) {
     auto entities = get_system_entities();
 
     for (auto i = entities.begin(); i != entities.end(); i++) {
@@ -27,8 +26,10 @@ public:
                 transform.position.x + collider.width > rhs_transform.position.x &&
                 transform.position.y < rhs_transform.position.y + rhs_collider.height &&
                 transform.position.y + collider.height > rhs_transform.position.y)
-                  Logger::Warn("Collision Detected!");
-          }
+                  is_colliding = true;
+            else
+                  is_colliding = false;
         }
-      }
+    }
+  }
 };
