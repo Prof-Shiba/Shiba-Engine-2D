@@ -166,11 +166,6 @@ public:
   template <typename T_system> T_system& get_system() const;
 
   void update();
-  // TODO:
-  // Remove entity
-  // add and remove components
-  // check if entity has component
-  // Add & Remove system
 
 private:
   uint32_t total_num_of_entities {0};
