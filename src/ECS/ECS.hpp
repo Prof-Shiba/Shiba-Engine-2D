@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 #include <set>
+#include <deque>
 #include "../Logger/Logger.hpp"
 
 ///////////////////////////////////////////////////////////////
@@ -74,6 +75,7 @@ public:
   template <typename T_component> T_component& get_component() const;
 
   uint32_t get_entity_id() const;
+  void remove();
 
 private:
   uint32_t entity_id;
@@ -151,7 +153,10 @@ public:
 
   // Entity management
   Entity create_entity();
+  void remove_entity(Entity entity);
+
   void add_entity_to_system(Entity entity);
+  void remove_entity_from_system(Entity entity);
 
   // Component management
   template <typename T_component, typename ...T_Args> void add_component(Entity entity, T_Args&& ...T_args);
@@ -180,6 +185,7 @@ private:
   std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
   std::set<Entity> entities_to_add;
   std::set<Entity> entities_to_remove;
+  std::deque<uint32_t> free_ids;
 };
 
 /////////////////////////////////////////////////////////////
