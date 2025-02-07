@@ -20,8 +20,8 @@ class RenderCollisionSystem : public System {
       auto& transform = entity.get_component<TransformComponent>();
 
       SDL_Rect rect {
-        static_cast<int>(transform.position.x),
-        static_cast<int>(transform.position.y),
+        static_cast<int>(transform.position.x + collider.offset.x),
+        static_cast<int>(transform.position.y + collider.offset.y),
         static_cast<int>(collider.width),
         static_cast<int>(collider.height)
       };

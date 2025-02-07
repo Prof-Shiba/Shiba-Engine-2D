@@ -22,10 +22,10 @@ public:
             auto& rhs_collider = j->get_component<BoxColliderComponent>();
             auto& rhs_transform = j->get_component<TransformComponent>();
 
-            if(transform.position.x < rhs_transform.position.x + rhs_collider.width &&
-                transform.position.x + collider.width > rhs_transform.position.x &&
-                transform.position.y < rhs_transform.position.y + rhs_collider.height &&
-                transform.position.y + collider.height > rhs_transform.position.y)
+            if (transform.position.x + collider.offset.x < rhs_transform.position.x + rhs_collider.width &&
+                transform.position.x + collider.offset.x + collider.width > rhs_transform.position.x &&
+                transform.position.y + collider.offset.y < rhs_transform.position.y + rhs_collider.height &&
+                transform.position.y + collider.offset.y + collider.height > rhs_transform.position.y)
                   is_colliding = true;
             else
                   is_colliding = false;
