@@ -25,8 +25,12 @@ public:
             if (transform.position.x + collider.offset.x < rhs_transform.position.x + rhs_collider.width &&
                 transform.position.x + collider.offset.x + collider.width > rhs_transform.position.x &&
                 transform.position.y + collider.offset.y < rhs_transform.position.y + rhs_collider.height &&
-                transform.position.y + collider.offset.y + collider.height > rhs_transform.position.y)
+                transform.position.y + collider.offset.y + collider.height > rhs_transform.position.y) {
                   is_colliding = true;
+                  // TODO: Emit event, but for now removing works
+                  i->remove();
+                  j->remove();
+            }
             else
                   is_colliding = false;
         }
