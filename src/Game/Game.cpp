@@ -206,13 +206,7 @@ void Game::ProcessInput() {
         }
 
         if (sdl_event.key.keysym.sym == SDLK_d) {
-          if (!debug_enabled) {
-            debug_enabled = true;
-            Logger::Log("Debug Mode Enabled!");
-          } else {
-            debug_enabled = false;
-            Logger::Log("Debug Mode Disabled!");
-          }
+          (!debug_enabled) ? debug_enabled = true : debug_enabled = false;
           break;
         }
     }
