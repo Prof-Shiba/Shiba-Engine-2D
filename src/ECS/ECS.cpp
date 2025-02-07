@@ -1,9 +1,11 @@
 #include "ECS.hpp"
 #include "../Logger/Logger.hpp"
+#include <string>
 
 uint8_t I_component::next_id {0};
 
 uint32_t Entity::get_entity_id() const { return entity_id; }
+void Entity::remove() { registry->remove_entity(*this); }
 
 void System::add_entity_to_system(Entity entity) { entities.push_back(entity); }
 
@@ -20,17 +22,34 @@ std::vector<Entity> System::get_system_entities() const { return entities; }
 const Signature& System::get_component_signature() const { return component_signature; }
 
 Entity Registry::create_entity() {
-  uint32_t entity_id = total_num_of_entities++;
+  uint32_t entity_id;
+
+  if (free_ids.empty()) {
+    entity_id = total_num_of_entities++;
+    if (entity_id >= entity_component_signatures.size())
+      entity_component_signatures.resize(entity_id + 1);
+  }
+  else {
+    entity_id = free_ids.front();
+    free_ids.pop_front();
+  }
+
   Entity new_entity(entity_id);
   new_entity.registry = this;
   entities_to_add.insert(new_entity);
 
-  if (entity_id >= entity_component_signatures.size())
-    entity_component_signatures.resize(entity_id + 1);
-
   Logger::Log("Entity with ID [" + std::to_string(entity_id) + "] created!");
-
   return new_entity;
+}
+
+void Registry::remove_entity(Entity entity) {
+  entities_to_remove.insert(entity);
+  Logger::Warn("Removing Entity with ID [" + std::to_string(entity.get_entity_id()) + "]!");
+}
+
+void Registry::remove_entity_from_system(Entity entity) {
+  for (auto& system: systems)
+    system.second->remove_entity_from_system(entity);
 }
 
 void Registry::add_entity_to_system(Entity entity) {
@@ -51,4 +70,11 @@ void Registry::update() {
     add_entity_to_system(entity);
 
   entities_to_add.clear();
+
+  for (auto& entity: entities_to_remove) {
+    remove_entity_from_system(entity);
+    entity_component_signatures[entity.get_entity_id()].reset();
+    free_ids.push_back(entity.get_entity_id());
+  }
+  entities_to_remove.clear();
 }
