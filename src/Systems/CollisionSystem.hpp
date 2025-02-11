@@ -28,8 +28,6 @@ public:
                 transform.position.y + collider.offset.y + collider.height > rhs_transform.position.y) {
                   is_colliding = true;
                   // TODO: Emit event, but for now removing works
-                  i->remove();
-                  j->remove();
             }
             else
                   is_colliding = false;
