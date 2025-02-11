@@ -6,6 +6,7 @@
 #include <SDL2/SDL_image.h>
 #include "../ECS/ECS.hpp"
 #include "../AssetManager/AssetManager.hpp"
+#include "../EventManager/EventManager.hpp"
 
 const uint16_t FPS = 144;
 // 1000ms -> 1 second. Each frame should take 16.6 repeating ms
@@ -37,4 +38,5 @@ private:
   uint32_t ms_previous_frame = 0;
   std::unique_ptr<Registry> registry;
   std::unique_ptr<AssetManager> asset_manager;
+  std::unique_ptr<EventManager> event_manager;
 };
