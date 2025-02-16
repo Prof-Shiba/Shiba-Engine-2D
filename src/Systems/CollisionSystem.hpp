@@ -2,6 +2,8 @@
 #include "../ECS/ECS.hpp"
 #include "../Components/BoxColliderComponent.hpp"
 #include "../Components/TransformComponent.hpp"
+#include "../EventManager/EventManager.hpp"
+#include "../Events/CollisionEvent.hpp"
 
 class CollisionSystem : public System {
 public:
@@ -11,7 +13,7 @@ public:
   }
   ~CollisionSystem() = default;
 
-  void Update(bool& is_colliding) {
+  void Update(bool& is_colliding, std::unique_ptr<EventManager>& event_manager) {
     auto entities = get_system_entities();
 
     for (auto i = entities.begin(); i != entities.end(); i++) {
@@ -27,7 +29,9 @@ public:
                 transform.position.y + collider.offset.y < rhs_transform.position.y + rhs_collider.height &&
                 transform.position.y + collider.offset.y + collider.height > rhs_transform.position.y) {
                   is_colliding = true;
-                  // TODO: Emit event, but for now removing works
+                  event_manager->emit_event<CollisionEvent>(i->get_entity_id(), j->get_entity_id());
+                  /*i->remove();*/ // works fine
+                  /*j->remove();*/
             }
             else
                   is_colliding = false;
