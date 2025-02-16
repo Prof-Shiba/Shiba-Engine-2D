@@ -19,6 +19,7 @@
 #include "../Systems/AnimationSystem.hpp"
 #include "../Systems/CollisionSystem.hpp"
 #include "../Systems/RenderCollisionSystem.hpp"
+#include "../Systems/DamageSystem.hpp"
 
 
 Game::Game() {
@@ -26,6 +27,7 @@ Game::Game() {
 
   registry = std::make_unique<Registry>();
   asset_manager = std::make_unique<AssetManager>();
+  event_manager = std::make_unique<EventManager>();
 
   Logger::Log("Game Constructor Called");
 }
@@ -41,6 +43,7 @@ void Game::LoadLevel(int level) {
   registry->add_system<AnimationSystem>();
   registry->add_system<CollisionSystem>();
   registry->add_system<RenderCollisionSystem>();
+  registry->add_system<DamageSystem>();
 
   // The linker will find #includes properly, however, when using images etc you must do it from the
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
@@ -122,9 +125,15 @@ void Game::Update() {
   // Store current frame time
   ms_previous_frame = SDL_GetTicks();
 
+  // Reset event handlers for current frame
+  event_manager->reset();
+
+  // Only valid for this current frame
+  registry->get_system<DamageSystem>().ListenForEvents(event_manager);
+
   registry->get_system<MovementSystem>().Update(delta_time);
   registry->get_system<AnimationSystem>().Update();
-  registry->get_system<CollisionSystem>().Update(is_colliding);
+  registry->get_system<CollisionSystem>().Update(is_colliding, event_manager);
 
   // Process entities that are waiting to be created/destroyed
   registry->update();
