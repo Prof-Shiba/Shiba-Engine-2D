@@ -58,6 +58,7 @@ public:
   template <typename T_Event, typename ...T_Args>
   void emit_event(T_Args&& ...args) {
     auto handlers = listeners[typeid(T_Event)].get();
+
     if (handlers) {
       for (auto it = handlers->begin(); it != handlers->end(); it++) {
         auto handler = it->get();
@@ -67,4 +68,5 @@ public:
     }
   }
 
+  void reset() { listeners.clear(); }
 };
