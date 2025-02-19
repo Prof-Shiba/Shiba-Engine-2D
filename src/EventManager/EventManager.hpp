@@ -46,6 +46,11 @@ public:
   EventManager() { Logger::Log("EventManager Constructor Called!"); }
   ~EventManager() { Logger::Log("EventManager Destructor Called!"); }
 
+  ////////////////////////////////////////////////////////////////////////
+  // Listens for an event of type <T_Event>
+  // A listener listens for an event like the following:
+  // event_manager->listen_for_event<CollisionEvent>(&Game::on_collision);
+  ////////////////////////////////////////////////////////////////////////
   template <typename T_Owner, typename T_Event>
   void listen_for_event(T_Owner* owner_instance, void (T_Owner::*call_back_function)(T_Event&)) {
     if (!listeners[typeid(T_Event)].get())
@@ -55,6 +60,12 @@ public:
     listeners[typeid(T_Event)]->push_back(std::move(listener));
   }
 
+  ////////////////////////////////////////////////////////////////////////
+  // Emit an event of type <T_Event>
+  // As soon as anything emits an event, we execute all of the listener
+  // callback functions like the following:
+  // event_manager->emit_event<CollisionEvent>(lhs, rhs);
+  ////////////////////////////////////////////////////////////////////////
   template <typename T_Event, typename ...T_Args>
   void emit_event(T_Args&& ...args) {
     auto handlers = listeners[typeid(T_Event)].get();
