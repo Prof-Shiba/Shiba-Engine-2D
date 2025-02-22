@@ -26,9 +26,9 @@ class RenderCollisionSystem : public System {
         static_cast<int>(collider.height)
       };
 
-      if (is_colliding)
+      if (is_colliding) // draw red if colliding
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-      else
+      else // else draw yellow
         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
 
       SDL_RenderDrawRect(renderer, &rect);
