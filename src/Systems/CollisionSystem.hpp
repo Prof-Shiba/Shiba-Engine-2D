@@ -29,9 +29,7 @@ public:
                 transform.position.y + collider.offset.y < rhs_transform.position.y + rhs_collider.height &&
                 transform.position.y + collider.offset.y + collider.height > rhs_transform.position.y) {
                   is_colliding = true;
-                  event_manager->emit_event<CollisionEvent>(i->get_entity_id(), j->get_entity_id());
-                  /*i->remove();*/ // works fine
-                  /*j->remove();*/
+                  event_manager->emit_event<CollisionEvent>(*i, *j);
             }
             else
                   is_colliding = false;
