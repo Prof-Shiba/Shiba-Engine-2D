@@ -6,7 +6,6 @@
 #include <map>
 #include <memory>
 #include <typeindex>
-#include <utility>
 
 class I_EventCallback {
 public:
@@ -17,6 +16,7 @@ private:
   virtual void Call(Event& e) = 0;
 };
 
+// Event callback is just a wrapper to a function pointer
 template <typename T_Owner, typename T_Event>
 class EventCallback : public I_EventCallback {
 private:
@@ -36,8 +36,12 @@ public:
   virtual ~EventCallback() override = default;
 };
 
+// We use I_EventCallback as EventCallback is a template, and
+// does not yet exist. As EventCallback inherits from I_EventCallback
+// ("is-a" relationship), we can use the interface here to access it
 typedef std::list<std::unique_ptr<I_EventCallback>> HandlerList;
 
+// Keeps track of everything listening for a certain event
 class EventManager {
 private:
   std::map<std::type_index, std::unique_ptr<HandlerList>> listeners;
@@ -49,7 +53,7 @@ public:
   ////////////////////////////////////////////////////////////////////////
   // Listens for an event of type <T_Event>
   // A listener listens for an event like the following:
-  // event_manager->listen_for_event<CollisionEvent>(&Game::on_collision);
+  // event_manager->listen_for_event<CollisionEvent>(this, &Game::on_collision);
   ////////////////////////////////////////////////////////////////////////
   template <typename T_Owner, typename T_Event>
   void listen_for_event(T_Owner* owner_instance, void (T_Owner::*call_back_function)(T_Event&)) {
