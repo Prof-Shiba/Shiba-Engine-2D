@@ -5,7 +5,6 @@
 #include "../EventManager/EventManager.hpp"
 #include "../Events/CollisionEvent.hpp"
 #include "../Logger/Logger.hpp"
-#include <string>
 
 class DamageSystem: public System {
 public:
@@ -19,8 +18,8 @@ public:
 
   void onCollision(CollisionEvent& event) {
     Logger::Log("DamageSystem event occured! Entities: " + std::to_string(event.lhs.get_entity_id()) + " and " + std::to_string(event.rhs.get_entity_id()) + "!");
-    /*event.lhs.remove();*/ // TODO: Fix seg faults
-    /*event.rhs.remove();*/
+    event.lhs.remove();
+    event.rhs.remove();
   }
 
   void Update() {
