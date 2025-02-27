@@ -67,7 +67,7 @@ public:
   ////////////////////////////////////////////////////////////////////////
   // Emit an event of type <T_Event>
   // As soon as anything emits an event, we execute all of the listener
-  // callback functions like the following:
+  // callback functions. Use this method like the following:
   // event_manager->emit_event<CollisionEvent>(lhs, rhs);
   ////////////////////////////////////////////////////////////////////////
   template <typename T_Event, typename ...T_Args>
