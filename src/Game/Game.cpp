@@ -20,6 +20,7 @@
 #include "../Systems/CollisionSystem.hpp"
 #include "../Systems/RenderCollisionSystem.hpp"
 #include "../Systems/DamageSystem.hpp"
+#include "../Systems/KeyboardMovementSystem.hpp"
 
 
 Game::Game() {
@@ -44,6 +45,7 @@ void Game::LoadLevel(int level) {
   registry->add_system<CollisionSystem>();
   registry->add_system<RenderCollisionSystem>();
   registry->add_system<DamageSystem>();
+  registry->add_system<KeyboardMovementSystem>();
 
   // The linker will find #includes properly, however, when using images etc you must do it from the
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
@@ -133,6 +135,7 @@ void Game::Update() {
 
   // Only valid for this current frame
   registry->get_system<DamageSystem>().ListenForEvents(event_manager);
+  registry->get_system<KeyboardMovementSystem>().ListenForEvents(event_manager);
 
   registry->get_system<MovementSystem>().Update(delta_time);
   registry->get_system<AnimationSystem>().Update();
@@ -212,6 +215,7 @@ void Game::ProcessInput() {
         break;
 
       case SDL_KEYDOWN:
+        event_manager->emit_event<KeyPressedEvent>(sdl_event);
         if (sdl_event.key.keysym.sym == SDLK_ESCAPE) {
           is_running = false;
           break;
