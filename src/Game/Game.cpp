@@ -14,6 +14,7 @@
 #include "../Components/SpriteComponent.hpp"
 #include "../Components/AnimationComponent.hpp"
 #include "../Components/BoxColliderComponent.hpp"
+#include "../Components/KeyboardControlComponent.hpp"
 #include "../Systems/MovementSystem.hpp"
 #include "../Systems/RenderSystem.hpp"
 #include "../Systems/AnimationSystem.hpp"
@@ -51,7 +52,7 @@ void Game::LoadLevel(int level) {
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
   asset_manager->add_texture(renderer, "tank-image", "./assets/images/tank-tiger-right.png");
   asset_manager->add_texture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
-  asset_manager->add_texture(renderer, "helicopter-image", "./assets/images/chopper.png");
+  asset_manager->add_texture(renderer, "helicopter-image", "./assets/images/chopper-spritesheet.png");
   asset_manager->add_texture(renderer, "radar-image", "./assets/images/radar.png");
   asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
 
@@ -91,9 +92,10 @@ void Game::LoadLevel(int level) {
   // Entities & Components
   Entity helicopter = registry->create_entity();
   helicopter.add_component<TransformComponent>(glm::vec2(50, 90), glm::vec2(2.0, 2.0), 0.0);
-  helicopter.add_component<RigidBodyComponent>(glm::vec2(100.0, 0.0));
+  helicopter.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   helicopter.add_component<SpriteComponent>("helicopter-image", 32, 32, 0, 0, 3);
   helicopter.add_component<AnimationComponent>(2, 10, true);
+  helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -40), glm::vec2(40, 0), glm::vec2(0, 40), glm::vec2(-40, 0));
 
   Entity radar = registry->create_entity();
   radar.add_component<TransformComponent>(glm::vec2(50, 100), glm::vec2(2.0, 2.0), 0.0);
