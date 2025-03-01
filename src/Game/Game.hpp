@@ -30,7 +30,6 @@ public:
   uint16_t HEIGHT;
   bool is_running;
   bool debug_enabled;
-  bool is_colliding;
 
 private:
   SDL_Window* window;
