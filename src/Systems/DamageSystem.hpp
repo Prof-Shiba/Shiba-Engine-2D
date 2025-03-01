@@ -18,8 +18,10 @@ public:
 
   void onCollision(CollisionEvent& event) {
     Logger::Log("DamageSystem event occured! Entities: " + std::to_string(event.lhs.get_entity_id()) + " and " + std::to_string(event.rhs.get_entity_id()) + "!");
-    event.lhs.remove();
-    event.rhs.remove();
+    event.lhs.is_colliding = true;
+    event.rhs.is_colliding = true;
+    /*event.lhs.remove();*/
+    /*event.rhs.remove();*/
   }
 
   void Update() {
