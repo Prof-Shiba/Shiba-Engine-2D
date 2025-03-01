@@ -35,6 +35,7 @@ Entity Registry::create_entity() {
   }
 
   Entity new_entity(entity_id);
+  new_entity.is_colliding = false;
   new_entity.registry = this;
   entities_to_add.insert(new_entity);
 
