@@ -14,7 +14,7 @@ class RenderCollisionSystem : public System {
   }
    ~RenderCollisionSystem() = default;
 
-  void Update(SDL_Renderer* renderer, bool& is_colliding) {
+  void Update(SDL_Renderer* renderer) {
     for (auto& entity: get_system_entities()) {
       auto& collider = entity.get_component<BoxColliderComponent>();
       auto& transform = entity.get_component<TransformComponent>();
@@ -26,7 +26,11 @@ class RenderCollisionSystem : public System {
         static_cast<int>(collider.height)
       };
 
-      if (is_colliding) // draw red if colliding
+      // FIXME: This is drawing red still after entities that collided
+      // are removed, AND it draws red for ALL entities with a BoxColliderComponent
+      // 2025-03-01 13:27
+      // logic itself works, issue is elsewhere
+      if (entity.is_colliding) // draw red if colliding
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
       else // else draw yellow
         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
