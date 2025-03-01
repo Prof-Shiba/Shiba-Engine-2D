@@ -13,9 +13,9 @@ public:
   }
   ~CollisionSystem() = default;
 
-  void Update(bool& is_colliding, std::unique_ptr<EventManager>& event_manager) {
+  void Update(std::unique_ptr<EventManager>& event_manager) {
     auto entities = get_system_entities();
-
+    
     for (auto i = entities.begin(); i != entities.end(); i++) {
         auto& collider = i->get_component<BoxColliderComponent>();
         auto& transform = i->get_component<TransformComponent>();
@@ -28,12 +28,15 @@ public:
                 transform.position.x + collider.offset.x + collider.width > rhs_transform.position.x &&
                 transform.position.y + collider.offset.y < rhs_transform.position.y + rhs_collider.height &&
                 transform.position.y + collider.offset.y + collider.height > rhs_transform.position.y) {
-                  is_colliding = true;
+                  i->is_colliding = true;
+                  j->is_colliding = true;
                   event_manager->emit_event<CollisionEvent>(*i, *j);
             }
-            else
-                  is_colliding = false;
+            else {
+                  i->is_colliding = false;
+                  j->is_colliding = false;
+            }
+        }
         }
     }
-  }
 };
