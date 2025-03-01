@@ -96,6 +96,7 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<SpriteComponent>("helicopter-image", 32, 32, 0, 0, 3);
   helicopter.add_component<AnimationComponent>(2, 10, true);
   helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -40), glm::vec2(40, 0), glm::vec2(0, 40), glm::vec2(-40, 0));
+  helicopter.add_component<BoxColliderComponent>(60, 60);
 
   Entity radar = registry->create_entity();
   radar.add_component<TransformComponent>(glm::vec2(50, 100), glm::vec2(2.0, 2.0), 0.0);
@@ -141,7 +142,7 @@ void Game::Update() {
 
   registry->get_system<MovementSystem>().Update(delta_time);
   registry->get_system<AnimationSystem>().Update();
-  registry->get_system<CollisionSystem>().Update(is_colliding, event_manager);
+  registry->get_system<CollisionSystem>().Update(event_manager);
 
   // Process entities that are waiting to be created/destroyed
   registry->update();
@@ -154,7 +155,7 @@ void Game::Render() {
   registry->get_system<RenderSystem>().Update(renderer, asset_manager);
 
   if (debug_enabled)
-    registry->get_system<RenderCollisionSystem>().Update(renderer, is_colliding);
+    registry->get_system<RenderCollisionSystem>().Update(renderer);
 
   // Double buffer
   SDL_RenderPresent(renderer);
