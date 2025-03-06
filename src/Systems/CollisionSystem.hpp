@@ -2,6 +2,7 @@
 #include "../ECS/ECS.hpp"
 #include "../Components/BoxColliderComponent.hpp"
 #include "../Components/TransformComponent.hpp"
+#include "../Components/CollisionComponent.hpp"
 #include "../EventManager/EventManager.hpp"
 #include "../Events/CollisionEvent.hpp"
 
@@ -10,6 +11,7 @@ public:
   CollisionSystem() {
     require_component<BoxColliderComponent>();
     require_component<TransformComponent>();
+    require_component<CollisionComponent>();
   }
   ~CollisionSystem() = default;
 
