@@ -155,9 +155,10 @@ void Game::Update() {
 void Game::Render() {
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
   SDL_RenderClear(renderer);
-  
+
   registry->get_system<RenderSystem>().Update(renderer, asset_manager);
 
+  // FIXME: Entities staying red after collision
   if (debug_enabled)
     registry->get_system<RenderCollisionSystem>().Update(renderer);
 
