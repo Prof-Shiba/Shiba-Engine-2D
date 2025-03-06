@@ -90,13 +90,14 @@ void Game::LoadLevel(int level) {
   in_file.close();
 
   // Entities & Components
-  Entity helicopter = registry->create_entity();
+  Entity helicopter = registry->create_entity(); // 500
   helicopter.add_component<TransformComponent>(glm::vec2(50, 90), glm::vec2(2.0, 2.0), 0.0);
   helicopter.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   helicopter.add_component<SpriteComponent>("helicopter-image", 32, 32, 0, 0, 3);
   helicopter.add_component<AnimationComponent>(2, 10, true);
   helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -40), glm::vec2(40, 0), glm::vec2(0, 40), glm::vec2(-40, 0));
   helicopter.add_component<BoxColliderComponent>(60, 60);
+  helicopter.is_colliding = true; // NOTE: does nothing
 
   Entity radar = registry->create_entity();
   radar.add_component<TransformComponent>(glm::vec2(50, 100), glm::vec2(2.0, 2.0), 0.0);
@@ -104,13 +105,14 @@ void Game::LoadLevel(int level) {
   radar.add_component<SpriteComponent>("radar-image", 64, 64, 0, 0, 4);
   radar.add_component<AnimationComponent>(8, 5, true);
 
-  Entity tank = registry->create_entity();
+  Entity tank = registry->create_entity(); // 502
   tank.add_component<TransformComponent>(glm::vec2(100, 10), glm::vec2(2.0, 2.0), 0.0);
   tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
   tank.add_component<SpriteComponent>("tank-image", 32, 32, 0, 0, 2); // imgs are 32px, width and height, src rect x, src rect y, then z-index
   tank.add_component<BoxColliderComponent>(60, 60);
+  tank.is_colliding = true; // NOTE: does nothing
 
-  Entity truck = registry->create_entity();
+  Entity truck = registry->create_entity(); // 503
   truck.add_component<TransformComponent>(glm::vec2(300, 10), glm::vec2(2.0, 2.0), 0.0);
   truck.add_component<RigidBodyComponent>(glm::vec2(-50.0, 00.0));
   truck.add_component<SpriteComponent>("truck-image", 32, 32, 0, 0, 1);
