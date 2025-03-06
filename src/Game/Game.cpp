@@ -155,8 +155,6 @@ void Game::Render() {
   registry->get_system<RenderSystem>().Update(renderer, asset_manager);
 
   if (debug_enabled)
-    // FIXME: Set actual entity is_colliding flags in the vector later,
-    // as opposed to copies
     registry->get_system<RenderCollisionSystem>().Update(renderer);
 
   // Double buffer
