@@ -76,7 +76,6 @@ public:
 
   uint32_t get_entity_id() const;
   void remove();
-  bool is_colliding = false;
 
 private:
   uint32_t entity_id;
