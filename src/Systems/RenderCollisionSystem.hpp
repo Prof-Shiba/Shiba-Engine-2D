@@ -26,10 +26,6 @@ class RenderCollisionSystem : public System {
         static_cast<int>(collider.height)
       };
 
-      // FIXME: This is drawing red still after entities that collided
-      // are removed, AND it draws red for ALL entities with a BoxColliderComponent
-      // 2025-03-01 13:27
-      // logic itself works, issue is elsewhere
       if (entity.is_colliding) // draw red if colliding
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
       else // else draw yellow
