@@ -5,6 +5,7 @@
 #include "../ECS/ECS.hpp"
 #include "../Components/BoxColliderComponent.hpp"
 #include "../Components/TransformComponent.hpp"
+#include "../Components/CollisionComponent.hpp"
 
 class RenderCollisionSystem : public System {
   public:
@@ -18,6 +19,7 @@ class RenderCollisionSystem : public System {
     for (auto& entity: get_system_entities()) {
       auto& collider = entity.get_component<BoxColliderComponent>();
       auto& transform = entity.get_component<TransformComponent>();
+      auto& is_colliding = entity.get_component<CollisionComponent>().is_colliding;
 
       SDL_Rect rect {
         static_cast<int>(transform.position.x + collider.offset.x),
@@ -26,7 +28,7 @@ class RenderCollisionSystem : public System {
         static_cast<int>(collider.height)
       };
 
-      if (entity.is_colliding) // draw red if colliding
+      if (is_colliding) // draw red if colliding
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
       else // else draw yellow
         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
