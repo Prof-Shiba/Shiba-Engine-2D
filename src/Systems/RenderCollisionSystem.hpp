@@ -34,6 +34,7 @@ class RenderCollisionSystem : public System {
         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
 
       SDL_RenderDrawRect(renderer, &rect);
+      entity.get_component<CollisionComponent>().is_colliding = false;
     }
   }
 
