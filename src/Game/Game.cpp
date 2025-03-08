@@ -158,7 +158,6 @@ void Game::Render() {
 
   registry->get_system<RenderSystem>().Update(renderer, asset_manager);
 
-  // FIXME: Entities staying red after collision
   if (debug_enabled)
     registry->get_system<RenderCollisionSystem>().Update(renderer);
 
