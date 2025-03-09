@@ -16,7 +16,9 @@
 #include "../Components/BoxColliderComponent.hpp"
 #include "../Components/KeyboardControlComponent.hpp"
 #include "../Components/CollisionComponent.hpp"
+#include "../Components/CameraComponent.hpp"
 #include "../Systems/MovementSystem.hpp"
+#include "../Systems/CameraMovementSystem.hpp"
 #include "../Systems/RenderSystem.hpp"
 #include "../Systems/AnimationSystem.hpp"
 #include "../Systems/CollisionSystem.hpp"
@@ -24,6 +26,10 @@
 #include "../Systems/DamageSystem.hpp"
 #include "../Systems/KeyboardMovementSystem.hpp"
 
+uint16_t Game::HEIGHT;
+uint16_t Game::WIDTH;
+uint16_t Game::map_height;
+uint16_t Game::map_width;
 
 Game::Game() {
   is_running = false;
@@ -48,6 +54,7 @@ void Game::LoadLevel(int level) {
   registry->add_system<RenderCollisionSystem>();
   registry->add_system<DamageSystem>();
   registry->add_system<KeyboardMovementSystem>();
+  registry->add_system<CameraMovementSystem>();
 
   // The linker will find #includes properly, however, when using images etc you must do it from the
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
@@ -63,8 +70,8 @@ void Game::LoadLevel(int level) {
   float tile_scale = 3.5;
 
   // NOTE: Some race condition or smth similar here. Occasionally
-  // will not fully load the background, everything else always loads
-  // though
+  // will not fully load the background, it's just black.
+  // everything else always loads though
   std::ifstream in_file {"./assets/tilemaps/jungle.map"};
   if (in_file) {
     for (int y = 0; y < number_of_map_rows; y++) {
@@ -89,6 +96,8 @@ void Game::LoadLevel(int level) {
   }
 
   in_file.close();
+  map_width = number_of_map_cols * TILE_SIZE * tile_scale; 
+  map_height = number_of_map_rows * TILE_SIZE * tile_scale; 
 
   // Entities & Components
   Entity helicopter = registry->create_entity(); // 500
@@ -96,9 +105,10 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   helicopter.add_component<SpriteComponent>("helicopter-image", 32, 32, 0, 0, 3);
   helicopter.add_component<AnimationComponent>(2, 10, true);
-  helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -80), glm::vec2(80, 0), glm::vec2(0, 80), glm::vec2(-80, 0));
+  helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -160), glm::vec2(160, 0), glm::vec2(0, 160), glm::vec2(-160, 0));
   helicopter.add_component<BoxColliderComponent>(60, 60);
   helicopter.add_component<CollisionComponent>();
+  helicopter.add_component<CameraComponent>();
 
   Entity radar = registry->create_entity();
   radar.add_component<TransformComponent>(glm::vec2(50, 100), glm::vec2(2.0, 2.0), 0.0);
@@ -147,19 +157,20 @@ void Game::Update() {
   registry->get_system<MovementSystem>().Update(delta_time);
   registry->get_system<AnimationSystem>().Update();
   registry->get_system<CollisionSystem>().Update(event_manager);
+  registry->get_system<CameraMovementSystem>().Update(camera);
 
   // Process entities that are waiting to be created/destroyed
   registry->update();
-};
+}
 
 void Game::Render() {
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
   SDL_RenderClear(renderer);
 
-  registry->get_system<RenderSystem>().Update(renderer, asset_manager);
+  registry->get_system<RenderSystem>().Update(renderer, asset_manager, camera);
 
   if (debug_enabled)
-    registry->get_system<RenderCollisionSystem>().Update(renderer);
+    registry->get_system<RenderCollisionSystem>().Update(renderer, camera);
 
   // Double buffer
   SDL_RenderPresent(renderer);
@@ -196,6 +207,12 @@ void Game::Initialize() {
     Logger::Err("Failed to create SDL renderer!");
     return;
   }
+
+  // Initialize camera view with entire screen area
+  camera.x = 0;
+  camera.y = 0;
+  camera.w = WIDTH;
+  camera.h = HEIGHT;
 
   // Sets the actual video mode to fullscreen, keeping that width from earlier
   // avoids large and smaller monitors/resolutions seeing more or less

@@ -26,8 +26,10 @@ public:
   void Render();
   void Destroy();
 
-  uint16_t WIDTH;
-  uint16_t HEIGHT;
+  static uint16_t WIDTH;
+  static uint16_t HEIGHT;
+  static uint16_t map_width;
+  static uint16_t map_height;
   bool is_running;
   bool debug_enabled;
 
