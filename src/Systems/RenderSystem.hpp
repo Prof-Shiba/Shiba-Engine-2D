@@ -2,10 +2,10 @@
 #include "../ECS/ECS.hpp"
 #include "../Components/TransformComponent.hpp"
 #include "../Components/SpriteComponent.hpp"
+#include "../AssetManager/AssetManager.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
-#include "../AssetManager/AssetManager.hpp"
 #include <algorithm>
 #include <memory>
 
@@ -25,7 +25,7 @@ public:
 
   // I hate sorting here. I will change it later, but I just want to get a feel
   // for how doing it works first.
-  void Update(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& asset_manager) {
+  void Update(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& asset_manager, SDL_Rect& camera) {
     auto entities = get_system_entities();
 
     std::sort(entities.begin(), entities.end(), [](const Entity& lhs, const Entity& rhs) {
@@ -40,8 +40,8 @@ public:
       SDL_Rect source_rect = sprite.src_rect;
 
       SDL_Rect destination_rect = {
-        static_cast<int>(transform.position.x),
-        static_cast<int>(transform.position.y),
+        static_cast<int>(transform.position.x - camera.x),
+        static_cast<int>(transform.position.y - camera.y),
         static_cast<int>(sprite.width * transform.scale.x),
         static_cast<int>(sprite.height * transform.scale.y)
       };
