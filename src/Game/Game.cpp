@@ -106,7 +106,7 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   helicopter.add_component<SpriteComponent>("helicopter-image", 32, 32, 0, 0, 3);
   helicopter.add_component<AnimationComponent>(2, 10, true);
-  helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -160), glm::vec2(160, 0), glm::vec2(0, 160), glm::vec2(-160, 0));
+  helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -360), glm::vec2(360, 0), glm::vec2(0, 360), glm::vec2(-360, 0));
   helicopter.add_component<BoxColliderComponent>(60, 60);
   helicopter.add_component<CollisionComponent>();
   helicopter.add_component<CameraComponent>();
