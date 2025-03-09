@@ -33,6 +33,7 @@ uint16_t Game::map_width;
 
 Game::Game() {
   is_running = false;
+  debug_enabled = false;
 
   registry = std::make_unique<Registry>();
   asset_manager = std::make_unique<AssetManager>();
