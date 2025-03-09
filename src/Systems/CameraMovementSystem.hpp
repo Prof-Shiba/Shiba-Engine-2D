@@ -16,10 +16,10 @@ public:
       const auto& transform = entity.get_component<TransformComponent>();
       
       if (transform.position.x + (camera.w / 2) < Game::map_width)
-        camera.x = transform.position.x - (Game::WIDTH / 2);
+        camera.x = transform.position.x - (Game::WINDOW_WIDTH / 2);
 
       if (transform.position.y + (camera.h / 2) < Game::map_height)
-        camera.y = transform.position.y - (Game::HEIGHT / 2);
+        camera.y = transform.position.y - (Game::WINDOW_HEIGHT / 2);
 
       // Keep cam rect view inside screen limits
       camera.x = (camera.x < 0) ? 0 : camera.x;

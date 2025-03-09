@@ -26,8 +26,8 @@
 #include "../Systems/DamageSystem.hpp"
 #include "../Systems/KeyboardMovementSystem.hpp"
 
-uint16_t Game::HEIGHT;
-uint16_t Game::WIDTH;
+uint16_t Game::WINDOW_HEIGHT;
+uint16_t Game::WINDOW_WIDTH;
 uint16_t Game::map_height;
 uint16_t Game::map_width;
 
@@ -187,15 +187,15 @@ void Game::Initialize() {
   SDL_GetCurrentDisplayMode(0, &display_mode);
 
   // This will be the total area the player can view
-  WIDTH = 2560;
-  HEIGHT = 1440;
+  WINDOW_WIDTH = 2560;
+  WINDOW_HEIGHT = 1440;
 
   window = SDL_CreateWindow(
     "Shibe Engine",
     SDL_WINDOWPOS_CENTERED,
     SDL_WINDOWPOS_CENTERED,
-    WIDTH,
-    HEIGHT,
+    WINDOW_WIDTH,
+    WINDOW_HEIGHT,
     SDL_WINDOW_ALWAYS_ON_TOP
   );
   if (!window) {
@@ -212,8 +212,8 @@ void Game::Initialize() {
   // Initialize camera view with entire screen area
   camera.x = 0;
   camera.y = 0;
-  camera.w = WIDTH;
-  camera.h = HEIGHT;
+  camera.w = WINDOW_WIDTH;
+  camera.h = WINDOW_HEIGHT;
 
   // Sets the actual video mode to fullscreen, keeping that width from earlier
   // avoids large and smaller monitors/resolutions seeing more or less
