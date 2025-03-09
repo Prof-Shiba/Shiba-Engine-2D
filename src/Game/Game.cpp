@@ -199,7 +199,7 @@ void Game::Initialize() {
 
   // Sets the actual video mode to fullscreen, keeping that width from earlier
   // avoids large and smaller monitors/resolutions seeing more or less
-  /*SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);*/
+  SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
   is_running = true;
 };
 
