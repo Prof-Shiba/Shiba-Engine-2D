@@ -12,8 +12,8 @@ public:
   }
 
   void Update(SDL_Rect& camera) {
-    for (auto& entity: get_system_entities()) {
-      auto& transform = entity.get_component<TransformComponent>();
+    for (const auto& entity: get_system_entities()) {
+      const auto& transform = entity.get_component<TransformComponent>();
       
       if (transform.position.x + (camera.w / 2) < Game::map_width)
         camera.x = transform.position.x - (Game::WIDTH / 2);
