@@ -34,6 +34,7 @@ public:
 private:
   SDL_Window* window;
   SDL_Renderer* renderer;
+  SDL_Rect camera;
   uint32_t ms_previous_frame = 0;
   std::unique_ptr<Registry> registry;
   std::unique_ptr<AssetManager> asset_manager;
