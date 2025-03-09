@@ -15,15 +15,15 @@ class RenderCollisionSystem : public System {
   }
    ~RenderCollisionSystem() = default;
 
-  void Update(SDL_Renderer* renderer) {
+  void Update(SDL_Renderer* renderer, SDL_Rect& camera) {
     for (auto& entity: get_system_entities()) {
       auto& collider = entity.get_component<BoxColliderComponent>();
       auto& transform = entity.get_component<TransformComponent>();
       auto& is_colliding = entity.get_component<CollisionComponent>().is_colliding;
 
       SDL_Rect rect {
-        static_cast<int>(transform.position.x + collider.offset.x),
-        static_cast<int>(transform.position.y + collider.offset.y),
+        static_cast<int>(transform.position.x + collider.offset.x - camera.x),
+        static_cast<int>(transform.position.y + collider.offset.y - camera.y),
         static_cast<int>(collider.width),
         static_cast<int>(collider.height)
       };
