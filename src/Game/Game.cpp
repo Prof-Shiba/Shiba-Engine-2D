@@ -187,8 +187,8 @@ void Game::Initialize() {
   SDL_GetCurrentDisplayMode(0, &display_mode);
 
   // This will be the total area the player can view
-  WIDTH = 1280;
-  HEIGHT = 720;
+  WIDTH = 2560;
+  HEIGHT = 1440;
 
   window = SDL_CreateWindow(
     "Shibe Engine",
