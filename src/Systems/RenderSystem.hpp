@@ -40,8 +40,8 @@ public:
       SDL_Rect source_rect = sprite.src_rect;
 
       SDL_Rect destination_rect = {
-        static_cast<int>(transform.position.x - camera.x),
-        static_cast<int>(transform.position.y - camera.y),
+        static_cast<int>(transform.position.x - (sprite.is_fixed ? 0 : camera.x)),
+        static_cast<int>(transform.position.y - (sprite.is_fixed ? 0 : camera.y)),
         static_cast<int>(sprite.width * transform.scale.x),
         static_cast<int>(sprite.height * transform.scale.y)
       };
