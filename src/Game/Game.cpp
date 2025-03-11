@@ -17,6 +17,7 @@
 #include "../Components/KeyboardControlComponent.hpp"
 #include "../Components/CollisionComponent.hpp"
 #include "../Components/CameraComponent.hpp"
+#include "../Components/HealthComponent.hpp"
 #include "../Systems/MovementSystem.hpp"
 #include "../Systems/CameraMovementSystem.hpp"
 #include "../Systems/RenderSystem.hpp"
@@ -110,6 +111,7 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<BoxColliderComponent>(60, 60);
   helicopter.add_component<CollisionComponent>();
   helicopter.add_component<CameraComponent>();
+  helicopter.add_component<HealthComponent>(100);
 
   Entity radar = registry->create_entity();
   radar.add_component<TransformComponent>(glm::vec2(0, 0), glm::vec2(2.0, 2.0), 0.0);
@@ -123,6 +125,7 @@ void Game::LoadLevel(int level) {
   tank.add_component<SpriteComponent>("tank-image", 32, 32, 0, 0, 2); // imgs are 32px, width and height, src rect x, src rect y, then z-index
   tank.add_component<BoxColliderComponent>(60, 60);
   tank.add_component<CollisionComponent>();
+  tank.add_component<HealthComponent>(100);
 
   Entity truck = registry->create_entity(); // 503
   truck.add_component<TransformComponent>(glm::vec2(300, 10), glm::vec2(2.0, 2.0), 0.0);
@@ -130,6 +133,7 @@ void Game::LoadLevel(int level) {
   truck.add_component<SpriteComponent>("truck-image", 32, 32, 0, 0, 1);
   truck.add_component<BoxColliderComponent>(60, 50);
   truck.add_component<CollisionComponent>();
+  truck.add_component<HealthComponent>(100);
 }
 
 void Game::Setup() {
