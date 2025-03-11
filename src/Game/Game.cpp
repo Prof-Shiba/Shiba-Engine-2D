@@ -89,7 +89,7 @@ void Game::LoadLevel(int level) {
 
         Entity map_tile = registry->create_entity();
         map_tile.add_component<TransformComponent>(glm::vec2(x * (tile_scale * TILE_SIZE), y * (tile_scale * TILE_SIZE)), glm::vec2(tile_scale, tile_scale), 0.0);
-        map_tile.add_component<SpriteComponent>("jungle-tilemap", TILE_SIZE, TILE_SIZE, src_rect_x, src_rect_y, 0);
+        map_tile.add_component<SpriteComponent>("jungle-tilemap", TILE_SIZE, TILE_SIZE, src_rect_x, src_rect_y, 0, false);
       }
     }
   } else {
@@ -112,9 +112,9 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<CameraComponent>();
 
   Entity radar = registry->create_entity();
-  radar.add_component<TransformComponent>(glm::vec2(50, 100), glm::vec2(2.0, 2.0), 0.0);
+  radar.add_component<TransformComponent>(glm::vec2(0, 0), glm::vec2(2.0, 2.0), 0.0);
   radar.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
-  radar.add_component<SpriteComponent>("radar-image", 64, 64, 0, 0, 4);
+  radar.add_component<SpriteComponent>("radar-image", 64, 64, 0, 0, 4, true);
   radar.add_component<AnimationComponent>(8, 5, true);
 
   Entity tank = registry->create_entity(); // 502
