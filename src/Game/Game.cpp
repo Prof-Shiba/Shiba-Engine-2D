@@ -18,6 +18,7 @@
 #include "../Components/CollisionComponent.hpp"
 #include "../Components/CameraComponent.hpp"
 #include "../Components/HealthComponent.hpp"
+#include "../Components/ProjectileEmitterComponent.hpp"
 #include "../Systems/MovementSystem.hpp"
 #include "../Systems/CameraMovementSystem.hpp"
 #include "../Systems/RenderSystem.hpp"
@@ -26,6 +27,7 @@
 #include "../Systems/RenderCollisionSystem.hpp"
 #include "../Systems/DamageSystem.hpp"
 #include "../Systems/KeyboardMovementSystem.hpp"
+#include "../Systems/ProjectileEmitterSystem.hpp"
 
 uint16_t Game::WINDOW_HEIGHT;
 uint16_t Game::WINDOW_WIDTH;
@@ -57,6 +59,7 @@ void Game::LoadLevel(int level) {
   registry->add_system<DamageSystem>();
   registry->add_system<KeyboardMovementSystem>();
   registry->add_system<CameraMovementSystem>();
+  registry->add_system<ProjectileEmitterSystem>();
 
   // The linker will find #includes properly, however, when using images etc you must do it from the
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
@@ -65,6 +68,7 @@ void Game::LoadLevel(int level) {
   asset_manager->add_texture(renderer, "helicopter-image", "./assets/images/chopper-spritesheet.png");
   asset_manager->add_texture(renderer, "radar-image", "./assets/images/radar.png");
   asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
+  asset_manager->add_texture(renderer, "bullet-image", "./assets/images/bullet.png");
 
   const uint8_t TILE_SIZE = 32;
   uint8_t number_of_map_cols = 25;
@@ -121,19 +125,21 @@ void Game::LoadLevel(int level) {
 
   Entity tank = registry->create_entity(); // 502
   tank.add_component<TransformComponent>(glm::vec2(100, 10), glm::vec2(2.0, 2.0), 0.0);
-  tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
+  tank.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   tank.add_component<SpriteComponent>("tank-image", 32, 32, 0, 0, 2); // imgs are 32px, width and height, src rect x, src rect y, then z-index
   tank.add_component<BoxColliderComponent>(60, 60);
   tank.add_component<CollisionComponent>();
   tank.add_component<HealthComponent>(100);
+  tank.add_component<ProjectileEmitterComponent>(glm::vec2(100, 0), 5000, 10000, 0, false);
 
   Entity truck = registry->create_entity(); // 503
   truck.add_component<TransformComponent>(glm::vec2(300, 10), glm::vec2(2.0, 2.0), 0.0);
-  truck.add_component<RigidBodyComponent>(glm::vec2(-50.0, 00.0));
+  truck.add_component<RigidBodyComponent>(glm::vec2(0.0, 00.0));
   truck.add_component<SpriteComponent>("truck-image", 32, 32, 0, 0, 1);
   truck.add_component<BoxColliderComponent>(60, 50);
   truck.add_component<CollisionComponent>();
   truck.add_component<HealthComponent>(100);
+  truck.add_component<ProjectileEmitterComponent>(glm::vec2(0, 100), 2000, 5000, 0, false);
 }
 
 void Game::Setup() {
@@ -163,6 +169,7 @@ void Game::Update() {
   registry->get_system<AnimationSystem>().Update();
   registry->get_system<CollisionSystem>().Update(event_manager);
   registry->get_system<CameraMovementSystem>().Update(camera);
+  registry->get_system<ProjectileEmitterSystem>().Update(registry);
 
   // Process entities that are waiting to be created/destroyed
   registry->update();
