@@ -1,21 +1,32 @@
 #pragma once
+#include "../EventManager/EventManager.hpp"
+#include "../Events/KeyPressedEvent.hpp"
 #include "../Components/ProjectileEmitterComponent.hpp"
 #include "../Components/TransformComponent.hpp"
 #include "../Components/RigidBodyComponent.hpp"
 #include "../Components/SpriteComponent.hpp"
 #include "../Components/BoxColliderComponent.hpp"
 #include "../Components/CollisionComponent.hpp"
+#include "../Components/ProjectileComponent.hpp"
 #include "../ECS/ECS.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
-
-// TODO: Destroy projectiles
 
 class ProjectileEmitterSystem : public System {
 public:
   ProjectileEmitterSystem() {
     require_component<ProjectileEmitterComponent>();
     require_component<TransformComponent>();
+  }
+
+  void ListenForEvents(std::unique_ptr<EventManager>& event_manager) {
+    event_manager->listen_for_event(this, &ProjectileEmitterSystem::onKeyPressed);
+  }
+
+  void onKeyPressed(KeyPressedEvent& event) {
+    if (event.key_pressed == SDLK_SPACE) {
+      // TODO: Emit a projectile in the direction we are facing
+    }
   }
 
   void Update(const std::unique_ptr<Registry>& registry) {
@@ -38,6 +49,7 @@ public:
         projectile.add_component<SpriteComponent>("bullet-image", 4, 4, 0, 0, 3, false);
         projectile.add_component<BoxColliderComponent>(4, 4);
         projectile.add_component<CollisionComponent>();
+        projectile.add_component<ProjectileComponent>(projectile_emitter.is_friendly, projectile_emitter.damage, projectile_emitter.projectile_duration);
 
         projectile_emitter.last_emission_time = SDL_GetTicks();
       }
