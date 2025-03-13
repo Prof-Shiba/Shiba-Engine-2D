@@ -1,6 +1,4 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_stdinc.h>
-#include <SDL2/SDL_timer.h>
 #include <cstdint>
 #include <memory>
 #include <fstream>
@@ -28,6 +26,7 @@
 #include "../Systems/DamageSystem.hpp"
 #include "../Systems/KeyboardMovementSystem.hpp"
 #include "../Systems/ProjectileEmitterSystem.hpp"
+#include "../Systems/ProjectileDurationSystem.hpp"
 
 uint16_t Game::WINDOW_HEIGHT;
 uint16_t Game::WINDOW_WIDTH;
@@ -60,6 +59,7 @@ void Game::LoadLevel(int level) {
   registry->add_system<KeyboardMovementSystem>();
   registry->add_system<CameraMovementSystem>();
   registry->add_system<ProjectileEmitterSystem>();
+  registry->add_system<ProjectileDurationSystem>();
 
   // The linker will find #includes properly, however, when using images etc you must do it from the
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
@@ -164,12 +164,14 @@ void Game::Update() {
   // Only valid for this current frame
   registry->get_system<DamageSystem>().ListenForEvents(event_manager);
   registry->get_system<KeyboardMovementSystem>().ListenForEvents(event_manager);
+  registry->get_system<ProjectileEmitterSystem>().ListenForEvents(event_manager);
 
   registry->get_system<MovementSystem>().Update(delta_time);
   registry->get_system<AnimationSystem>().Update();
   registry->get_system<CollisionSystem>().Update(event_manager);
   registry->get_system<CameraMovementSystem>().Update(camera);
   registry->get_system<ProjectileEmitterSystem>().Update(registry);
+  registry->get_system<ProjectileDurationSystem>().Update();
 
   // Process entities that are waiting to be created/destroyed
   registry->update();
@@ -252,6 +254,7 @@ void Game::ProcessInput() {
 
       case SDL_KEYDOWN:
         event_manager->emit_event<KeyPressedEvent>(sdl_event);
+
         if (sdl_event.key.keysym.sym == SDLK_ESCAPE) {
           is_running = false;
           break;
