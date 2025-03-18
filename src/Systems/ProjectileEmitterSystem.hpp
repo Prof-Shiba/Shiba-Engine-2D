@@ -8,6 +8,7 @@
 #include "../Components/BoxColliderComponent.hpp"
 #include "../Components/CollisionComponent.hpp"
 #include "../Components/ProjectileComponent.hpp"
+#include "../Components/PlayerShootComponent.hpp"
 #include "../ECS/ECS.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
@@ -18,6 +19,7 @@ public:
     require_component<ProjectileEmitterComponent>();
     require_component<TransformComponent>();
   }
+  bool player_shooting = false;
 
   void ListenForEvents(std::unique_ptr<EventManager>& event_manager) {
     event_manager->listen_for_event(this, &ProjectileEmitterSystem::onKeyPressed);
@@ -25,12 +27,16 @@ public:
 
   void onKeyPressed(KeyPressedEvent& event) {
     if (event.key_pressed == SDLK_SPACE) {
-      // TODO: Emit a projectile in the direction we are facing
+      player_shooting = true; 
     }
   }
 
   void Update(const std::unique_ptr<Registry>& registry) {
     for (auto& entity: get_system_entities()) {
+      // FIXME: Bullets not at proper angle and loops through all entities before getting back to actual player, causing delay
+      if (entity.has_component<PlayerShootComponent>() && player_shooting == false)
+        continue;
+
       auto& projectile_emitter = entity.get_component<ProjectileEmitterComponent>();
       const auto& transform = entity.get_component<TransformComponent>();
 
@@ -52,10 +58,11 @@ public:
         projectile.add_component<ProjectileComponent>(projectile_emitter.is_friendly, projectile_emitter.damage, projectile_emitter.projectile_duration);
 
         projectile_emitter.last_emission_time = SDL_GetTicks();
-      }
 
+        if (entity.has_component<PlayerShootComponent>())
+          player_shooting = false;
+      }
     }
   }
-
 
 };
