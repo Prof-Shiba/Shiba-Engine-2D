@@ -17,6 +17,7 @@
 #include "../Components/CameraComponent.hpp"
 #include "../Components/HealthComponent.hpp"
 #include "../Components/ProjectileEmitterComponent.hpp"
+#include "../Components/PlayerShootComponent.hpp"
 #include "../Systems/MovementSystem.hpp"
 #include "../Systems/CameraMovementSystem.hpp"
 #include "../Systems/RenderSystem.hpp"
@@ -116,6 +117,8 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<CollisionComponent>();
   helicopter.add_component<CameraComponent>();
   helicopter.add_component<HealthComponent>(100);
+  helicopter.add_component<ProjectileEmitterComponent>(glm::vec2(helicopter.get_component<TransformComponent>().position), 2000, 2000, 0, false);
+  helicopter.add_component<PlayerShootComponent>();
 
   Entity radar = registry->create_entity();
   radar.add_component<TransformComponent>(glm::vec2(0, 0), glm::vec2(2.0, 2.0), 0.0);
