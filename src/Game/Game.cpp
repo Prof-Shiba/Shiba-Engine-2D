@@ -117,7 +117,7 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<CollisionComponent>();
   helicopter.add_component<CameraComponent>();
   helicopter.add_component<HealthComponent>(100);
-  helicopter.add_component<ProjectileEmitterComponent>(glm::vec2(helicopter.get_component<TransformComponent>().position), 2000, 2000, 0, false);
+  helicopter.add_component<ProjectileEmitterComponent>(glm::vec2(500, 500), 0, 2000, 0, true);
   helicopter.add_component<PlayerShootComponent>();
 
   Entity radar = registry->create_entity();
