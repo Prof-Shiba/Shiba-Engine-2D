@@ -77,6 +77,11 @@ public:
   uint32_t get_entity_id() const;
   void remove();
 
+  void tag(const std::string& tag);
+  bool has_tag(const std::string& tag) const;
+  void group(const std::string& group);
+  bool belongs_to_group(const std::string& group) const;
+
 private:
   uint32_t entity_id;
 };
@@ -158,6 +163,16 @@ public:
   void add_entity_to_system(Entity entity);
   void remove_entity_from_system(Entity entity);
 
+  void add_tag_to_entity(Entity& entity, const std::string& tag);
+  bool entity_has_tag(const Entity& entity, const std::string& tag) const;
+  Entity get_entity_by_tag(const std::string& tag) const;
+  void remove_tag_from_entity(Entity entity);
+
+  void add_group_to_entity(Entity& entity, const std::string& group);
+  bool entity_in_group(const Entity& entity, const std::string& group) const;
+  std::vector<Entity> get_entities_by_group(const std::string& group) const;
+  void remove_group_from_entity(Entity entity);
+
   // Component management
   template <typename T_component, typename ...T_Args> void add_component(Entity entity, T_Args&& ...T_args);
   template <typename T_component> void remove_component(Entity entity);
@@ -186,6 +201,12 @@ private:
   std::set<Entity> entities_to_add;
   std::set<Entity> entities_to_remove;
   std::deque<uint32_t> free_ids;
+
+  std::unordered_map<std::string, Entity> entity_per_tag;
+  std::unordered_map<uint16_t, std::string> tag_per_entity;
+
+  std::unordered_map<std::string, std::set<Entity>> entities_per_group;
+  std::unordered_map<uint16_t, std::string> group_per_entity;
 };
 
 /////////////////////////////////////////////////////////////
