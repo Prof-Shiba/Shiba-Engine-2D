@@ -27,7 +27,7 @@ public:
   void onKeyPressed(KeyPressedEvent& event) {
     if (event.key_pressed == SDLK_SPACE) {
       for (auto& entity: get_system_entities()) {
-        if (entity.has_component<PlayerShootComponent>()) {
+        if (entity.has_tag("player")) {
           const auto& projectile_emitter = entity.get_component<ProjectileEmitterComponent>();
           const auto& transform = entity.get_component<TransformComponent>();
           const auto& rigid_body = entity.get_component<RigidBodyComponent>();
