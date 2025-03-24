@@ -8,7 +8,6 @@
 #include "../Components/BoxColliderComponent.hpp"
 #include "../Components/CollisionComponent.hpp"
 #include "../Components/ProjectileComponent.hpp"
-#include "../Components/PlayerShootComponent.hpp"
 #include "../ECS/ECS.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
