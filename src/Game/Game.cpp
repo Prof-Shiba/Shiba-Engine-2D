@@ -93,7 +93,7 @@ void Game::LoadLevel(int level) {
         in_file.ignore();
 
         Entity map_tile = registry->create_entity();
-        map_tile.group("tiles");
+        map_tile.group("tile");
         map_tile.add_component<TransformComponent>(glm::vec2(x * (tile_scale * TILE_SIZE), y * (tile_scale * TILE_SIZE)), glm::vec2(tile_scale, tile_scale), 0.0);
         map_tile.add_component<SpriteComponent>("jungle-tilemap", TILE_SIZE, TILE_SIZE, src_rect_x, src_rect_y, 0, false);
       }
@@ -118,7 +118,7 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<CollisionComponent>();
   helicopter.add_component<CameraComponent>();
   helicopter.add_component<HealthComponent>(100);
-  helicopter.add_component<ProjectileEmitterComponent>(glm::vec2(500, 500), 0, 2000, 0, true);
+  helicopter.add_component<ProjectileEmitterComponent>(glm::vec2(500, 500), 0, 2000, 10, true);
 
   Entity radar = registry->create_entity();
   radar.add_component<TransformComponent>(glm::vec2(0, 0), glm::vec2(2.0, 2.0), 0.0);
@@ -134,7 +134,7 @@ void Game::LoadLevel(int level) {
   tank.add_component<BoxColliderComponent>(60, 60);
   tank.add_component<CollisionComponent>();
   tank.add_component<HealthComponent>(100);
-  tank.add_component<ProjectileEmitterComponent>(glm::vec2(100, 0), 5000, 10000, 0, false);
+  tank.add_component<ProjectileEmitterComponent>(glm::vec2(100, 0), 5000, 10000, 10, false);
 
   Entity truck = registry->create_entity(); // 503
   truck.group("enemy");
@@ -144,7 +144,7 @@ void Game::LoadLevel(int level) {
   truck.add_component<BoxColliderComponent>(60, 50);
   truck.add_component<CollisionComponent>();
   truck.add_component<HealthComponent>(100);
-  truck.add_component<ProjectileEmitterComponent>(glm::vec2(0, 100), 2000, 5000, 0, false);
+  truck.add_component<ProjectileEmitterComponent>(glm::vec2(0, 100), 2000, 5000, 10, false);
 }
 
 void Game::Setup() {
