@@ -87,8 +87,10 @@ Entity Registry::get_entity_by_tag(const std::string& tag) const { return entity
 
 void Registry::remove_tag_from_entity(Entity entity) {
   auto tagged_entity = tag_per_entity.find(entity.get_entity_id());
+
   if (tagged_entity != tag_per_entity.end()) {
     auto tag = tagged_entity->second;
+
     entity_per_tag.erase(tag);
     tag_per_entity.erase(tagged_entity);
   }
@@ -101,6 +103,8 @@ void Registry::add_group_to_entity(Entity& entity, const std::string& group) {
 }
 
 bool Registry::entity_in_group(const Entity& entity, const std::string& group) const {
+  if (entities_per_group.find(group) == entities_per_group.end()) return false;
+
   auto group_entities = entities_per_group.at(group);
   return group_entities.find(entity.get_entity_id()) != group_entities.end();
 }
@@ -119,7 +123,7 @@ void Registry::remove_group_from_entity(Entity entity) {
     if (group != entities_per_group.end()) {
       auto entity_in_group = group->second.find(entity);
 
-      if (entity_in_group != group ->second.end())
+      if (entity_in_group != group->second.end())
         group->second.erase(entity_in_group);
     }
   }
