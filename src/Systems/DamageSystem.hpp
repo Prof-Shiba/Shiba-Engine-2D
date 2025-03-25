@@ -38,7 +38,7 @@ public:
   void Projectile_hit_player(Entity& projectile, Entity& player) {
     Logger::Log("Projectile hit player!");
 
-    auto& projectile_component = projectile.get_component<ProjectileComponent>();
+    const auto& projectile_component = projectile.get_component<ProjectileComponent>();
     auto& health_component = player.get_component<HealthComponent>();
 
     if (!projectile_component.is_friendly) {
@@ -55,7 +55,7 @@ public:
   void Projectile_hit_enemy(Entity& projectile, Entity& enemy) {
     Logger::Log("Projectile hit enemy!");
 
-    auto& projectile_component = projectile.get_component<ProjectileComponent>();
+    const auto& projectile_component = projectile.get_component<ProjectileComponent>();
     auto& health_component = enemy.get_component<HealthComponent>();
 
     if (projectile_component.is_friendly) {
