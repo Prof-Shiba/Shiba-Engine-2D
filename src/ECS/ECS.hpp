@@ -123,24 +123,77 @@ private:
 class I_Pool {
 public:
   virtual ~I_Pool() = default;
+  virtual void remove_entity_from_pool(uint32_t entity_id) = 0;
 };
 
 template <typename T>
 class Pool : public I_Pool {
 public:
-  Pool(size_t size = 100) { data.resize(size); }
+  Pool(uint32_t capacity = 100, uint32_t size = 0) : size(size) { data.resize(capacity); }
   virtual ~Pool() = default;
-  bool is_empty() { return data.empty(); }
-  size_t get_size() { return data.size(); }
-  void resize(size_t size) { data.resize(size); }
-  void clear() {data.clear(); }
+  bool is_empty() const { return size == 0; }
+  uint32_t get_size() { return size; }
+  void resize(uint32_t new_size) { data.resize(new_size); }
+
+  void clear() { 
+    data.clear();
+    size = 0;
+  }
+
   void add(T obj) { data.push_back(obj); }
-  void set_new_index(size_t index, T obj) { data[index] = obj; }
-  T& get_at_index(size_t index) { return static_cast<T&>( data[index] ); }
-  T& operator[](size_t index) { return data[index]; }
+
+  void set_new_index(uint32_t entity_id, T obj) {
+    if (entity_id_to_index.find(entity_id) != entity_id_to_index.end()) {
+      uint32_t index = entity_id_to_index[entity_id];
+      data[index] = obj;
+    } else {
+      uint32_t index = size;
+
+      entity_id_to_index.emplace(entity_id, index);
+      index_to_entity_id.emplace(index, entity_id);
+
+      if (index >= data.capacity()) data.resize(size * 2);
+      data[index] = obj;
+      size++;
+    }
+  }
+
+  void remove(uint32_t entity_id) {
+    if (entity_id_to_index.find(entity_id) == entity_id_to_index.end())
+      return;
+
+    uint32_t removal_index = entity_id_to_index[entity_id];
+    uint32_t last_index = size - 1;
+    data[removal_index] = data[last_index];
+
+    uint32_t entity_id_last_element = index_to_entity_id[last_index];
+    entity_id_to_index[entity_id_last_element] = removal_index;
+    index_to_entity_id[removal_index] = entity_id_last_element;
+
+    entity_id_to_index.erase(entity_id);
+    index_to_entity_id.erase(last_index);
+
+    size--;
+  }
+
+  void remove_entity_from_pool(uint32_t entity_id) override {
+    if (entity_id_to_index.find(entity_id) != entity_id_to_index.end())
+      remove(entity_id);
+  }
+
+  T& get_at_index(uint32_t entity_id) {
+    uint32_t index = entity_id_to_index[entity_id];
+    return static_cast<T&>(data[index]); 
+  }
+
+  T& operator[](uint32_t index) { return data[index]; }
 
 private:
   std::vector<T> data;
+  uint32_t size;
+  // helper maps for tracking entity IDs per index, so vector is always packed
+  std::unordered_map<uint32_t, uint32_t> entity_id_to_index;
+  std::unordered_map<uint32_t, uint32_t> index_to_entity_id;
 };
 
 ///////////////////////////////////////////////////////////////
@@ -236,9 +289,6 @@ void Registry::add_component(Entity entity, TArgs&& ...args) {
   // get the pool of comp values for that comp type
   auto current_comp_pool = std::static_pointer_cast<Pool<T_component>>(component_pool[component_id]);
 
-  if (entity_id >= current_comp_pool->get_size())
-    current_comp_pool->resize(total_num_of_entities);
-
   // Create new comp obj of type T_comp, and fwrd the various
   // params to the constructor
   T_component new_component(std::forward<TArgs>(args)...);
@@ -248,19 +298,22 @@ void Registry::add_component(Entity entity, TArgs&& ...args) {
   entity_component_signatures[entity_id].set(component_id);
 
   Logger::Log("Component with ID [" + std::to_string(component_id) + "] added to Entity ID [" + std::to_string(entity_id) + "]");
+  Logger::Err("COMPONENT ID = " + std::to_string(component_id) + " --> POOL SIZE: " + std::to_string(current_comp_pool->get_size()));
 }
 
 template <typename T_component>
 void Registry::remove_component(Entity entity) {
-  const auto component_id = Component<T_component>::get_component_id();
-  const auto entity_id = entity.get_entity_id();
+  const auto& component_id = Component<T_component>::get_component_id();
+  const auto& entity_id = entity.get_entity_id();
 
   if (has_component<T_component>(entity)) {
+    auto current_comp_pool = std::static_pointer_cast<Pool<T_component>>(component_pool[component_id]);
+    current_comp_pool->remove(entity_id);
 
     entity_component_signatures[entity_id].set(component_id, false);
+
     Logger::Log("Removed component [" + std::to_string(component_id) + "] successfully from Entity ID [" + std::to_string(entity_id) + "]!");
-    } 
-  else {
+    } else {
     Logger::Err("Failed removing component with ID [" + std::to_string(component_id) + "] from Entity with ID [" + std::to_string(entity_id) + "]. Entity is missing component!");
   }
 }

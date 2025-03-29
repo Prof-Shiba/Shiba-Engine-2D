@@ -138,6 +138,12 @@ void Registry::update() {
   for (auto& entity: entities_to_remove) {
     remove_entity_from_system(entity);
     entity_component_signatures[entity.get_entity_id()].reset();
+
+    for (auto& pool: component_pool) {
+      if (pool)
+        pool->remove_entity_from_pool(entity.get_entity_id());
+    }
+
     free_ids.push_back(entity.get_entity_id()); 
     // NOTE: Probably a better way of doing this ^
     // might end up hogging more heap memory as it doubles in size if we
