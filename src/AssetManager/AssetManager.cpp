@@ -3,6 +3,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
+#include <SDL2/SDL_ttf.h>
 
 AssetManager::AssetManager() { Logger::Log("AssetManager Constructor called!"); }
 
@@ -14,10 +15,13 @@ AssetManager::~AssetManager() {
 void AssetManager::clear_assets() {
   for (auto texture: textures)
     SDL_DestroyTexture(texture.second);
-
   // This only clears the map, not the SDL
   // heap memory! Hence above^
   textures.clear();
+
+  for (auto font: fonts)
+    TTF_CloseFont(font.second);
+  fonts.clear();
 }
 
 void AssetManager::add_texture(SDL_Renderer* renderer, const std::string& asset_id, const std::string& file_path) {
@@ -32,3 +36,9 @@ void AssetManager::add_texture(SDL_Renderer* renderer, const std::string& asset_
 
 // TODO: Add error checking later
 SDL_Texture* AssetManager::get_texture(const std::string& asset_id) const { return textures.at(asset_id); }
+
+void AssetManager::add_font(const std::string& asset_id, const std::string& file_path, uint16_t font_size) {
+  fonts.emplace(asset_id, TTF_OpenFont(file_path.c_str(), font_size));
+}
+
+TTF_Font* AssetManager::get_font(const std::string& asset_id) { return fonts.at(asset_id); }
