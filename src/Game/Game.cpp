@@ -69,6 +69,8 @@ void Game::LoadLevel(int level) {
   asset_manager->add_texture(renderer, "radar-image", "./assets/images/radar.png");
   asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
   asset_manager->add_texture(renderer, "bullet-image", "./assets/images/bullet.png");
+  asset_manager->add_font("charriot-font", "./assets/fonts/charriot.ttf", 16);
+  asset_manager->add_font("arial-font", "./assets/fonts/arial.ttf", 16);
 
   const uint8_t TILE_SIZE = 32;
   uint8_t number_of_map_cols = 25;
@@ -145,6 +147,9 @@ void Game::LoadLevel(int level) {
   truck.add_component<CollisionComponent>();
   truck.add_component<HealthComponent>(100);
   truck.add_component<ProjectileEmitterComponent>(glm::vec2(0, 100), 2000, 5000, 10, false);
+
+  // TODO:
+  // Entity text = registry->create_entity();
 }
 
 void Game::Setup() {
