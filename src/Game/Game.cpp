@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <cstdint>
 #include <memory>
 #include <fstream>
@@ -17,6 +18,7 @@
 #include "../Components/CameraComponent.hpp"
 #include "../Components/HealthComponent.hpp"
 #include "../Components/ProjectileEmitterComponent.hpp"
+#include "../Components/TextComponent.hpp"
 #include "../Systems/MovementSystem.hpp"
 #include "../Systems/CameraMovementSystem.hpp"
 #include "../Systems/RenderSystem.hpp"
@@ -27,6 +29,7 @@
 #include "../Systems/KeyboardMovementSystem.hpp"
 #include "../Systems/ProjectileEmitterSystem.hpp"
 #include "../Systems/ProjectileDurationSystem.hpp"
+#include "../Systems/RenderTextSystem.hpp"
 
 uint16_t Game::WINDOW_HEIGHT;
 uint16_t Game::WINDOW_WIDTH;
@@ -60,6 +63,7 @@ void Game::LoadLevel(int level) {
   registry->add_system<CameraMovementSystem>();
   registry->add_system<ProjectileEmitterSystem>();
   registry->add_system<ProjectileDurationSystem>();
+  registry->add_system<RenderTextSystem>();
 
   // The linker will find #includes properly, however, when using images etc you must do it from the
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
@@ -69,8 +73,8 @@ void Game::LoadLevel(int level) {
   asset_manager->add_texture(renderer, "radar-image", "./assets/images/radar.png");
   asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
   asset_manager->add_texture(renderer, "bullet-image", "./assets/images/bullet.png");
-  asset_manager->add_font("charriot-font", "./assets/fonts/charriot.ttf", 16);
-  asset_manager->add_font("arial-font", "./assets/fonts/arial.ttf", 16);
+  asset_manager->add_font("charriot-font", "./assets/fonts/charriot.ttf", 20);
+  asset_manager->add_font("arial-font", "./assets/fonts/arial.ttf", 20);
 
   const uint8_t TILE_SIZE = 32;
   uint8_t number_of_map_cols = 25;
@@ -148,8 +152,9 @@ void Game::LoadLevel(int level) {
   truck.add_component<HealthComponent>(100);
   truck.add_component<ProjectileEmitterComponent>(glm::vec2(0, 100), 2000, 5000, 10, false);
 
-  // TODO:
-  // Entity text = registry->create_entity();
+  Entity text = registry->create_entity();
+  SDL_Color COLOR_WHITE = {255, 255, 255};
+  text.add_component<TextComponent>(true, glm::vec2(WINDOW_WIDTH / 2 - 60, 0), "Shibe Engine 2D!", "arial-font", COLOR_WHITE);
 }
 
 void Game::Setup() {
@@ -192,6 +197,7 @@ void Game::Render() {
   SDL_RenderClear(renderer);
 
   registry->get_system<RenderSystem>().Update(renderer, asset_manager, camera);
+  registry->get_system<RenderTextSystem>().Update(asset_manager, renderer, camera);
 
   if (debug_enabled)
     registry->get_system<RenderCollisionSystem>().Update(renderer, camera);
@@ -203,6 +209,11 @@ void Game::Render() {
 void Game::Initialize() {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     Logger::Err("SDL failed to Initialize!");
+    return;
+  }
+
+  if (TTF_Init() != 0) {
+    Logger::Err("TTF failed to initialize!");
     return;
   }
 
