@@ -5,6 +5,7 @@
 #include "../Components/CollisionComponent.hpp"
 #include "../Components/ProjectileComponent.hpp"
 #include "../Components/HealthComponent.hpp"
+#include "../Components/GodModeComponent.hpp"
 #include "../EventManager/EventManager.hpp"
 #include "../Events/CollisionEvent.hpp"
 #include "../Logger/Logger.hpp"
@@ -41,6 +42,14 @@ public:
     const auto& projectile_component = projectile.get_component<ProjectileComponent>();
     auto& health_component = player.get_component<HealthComponent>();
 
+    if (player.has_component<GodModeComponent>() && (!projectile_component.is_friendly)) {
+      if (player.get_component<GodModeComponent>().god_mode_enabled) {
+        Logger::Log("Player has Godmode! Ignoring projectile!");
+        projectile.remove();
+        return;
+      }
+    }
+
     if (!projectile_component.is_friendly) {
       health_component.health_amount -= projectile_component.damage;
       projectile.remove();
@@ -57,6 +66,14 @@ public:
 
     const auto& projectile_component = projectile.get_component<ProjectileComponent>();
     auto& health_component = enemy.get_component<HealthComponent>();
+
+    if (enemy.has_component<GodModeComponent>() && (projectile_component.is_friendly)) {
+      if (enemy.get_component<GodModeComponent>().god_mode_enabled) {
+        Logger::Log("Enemy has Godmode! Ignoring projectile!");
+        projectile.remove();
+        return;
+      }
+    }
 
     if (projectile_component.is_friendly) {
       health_component.health_amount -= projectile_component.damage;
