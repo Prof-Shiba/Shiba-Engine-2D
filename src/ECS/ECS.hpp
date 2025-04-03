@@ -296,9 +296,6 @@ void Registry::add_component(Entity entity, TArgs&& ...args) {
 
   // Update the comp sig of the entity and set comp id on bitset to 1
   entity_component_signatures[entity_id].set(component_id);
-
-  Logger::Log("Component with ID [" + std::to_string(component_id) + "] added to Entity ID [" + std::to_string(entity_id) + "]");
-  Logger::Err("COMPONENT ID = " + std::to_string(component_id) + " --> POOL SIZE: " + std::to_string(current_comp_pool->get_size()));
 }
 
 template <typename T_component>
