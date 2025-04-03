@@ -19,6 +19,7 @@
 #include "../Components/HealthComponent.hpp"
 #include "../Components/ProjectileEmitterComponent.hpp"
 #include "../Components/TextComponent.hpp"
+#include "../Components/GodModeComponent.hpp"
 #include "../Systems/MovementSystem.hpp"
 #include "../Systems/CameraMovementSystem.hpp"
 #include "../Systems/RenderSystem.hpp"
@@ -125,6 +126,7 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<CameraComponent>();
   helicopter.add_component<HealthComponent>(100);
   helicopter.add_component<ProjectileEmitterComponent>(glm::vec2(500, 500), 0, 2000, 10, true);
+  helicopter.add_component<GodModeComponent>(false);
 
   Entity radar = registry->create_entity();
   radar.add_component<TransformComponent>(glm::vec2(0, 0), glm::vec2(2.0, 2.0), 0.0);
@@ -141,6 +143,7 @@ void Game::LoadLevel(int level) {
   tank.add_component<CollisionComponent>();
   tank.add_component<HealthComponent>(100);
   tank.add_component<ProjectileEmitterComponent>(glm::vec2(100, 0), 5000, 10000, 10, false);
+  tank.add_component<GodModeComponent>(false);
 
   Entity truck = registry->create_entity(); // 503
   truck.group("enemy");
@@ -151,6 +154,7 @@ void Game::LoadLevel(int level) {
   truck.add_component<CollisionComponent>();
   truck.add_component<HealthComponent>(100);
   truck.add_component<ProjectileEmitterComponent>(glm::vec2(0, 100), 2000, 5000, 10, false);
+  truck.add_component<GodModeComponent>(true);
 
   Entity text = registry->create_entity();
   SDL_Color COLOR_WHITE = {255, 255, 255};
