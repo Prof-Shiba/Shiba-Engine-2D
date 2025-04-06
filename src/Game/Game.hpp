@@ -41,4 +41,5 @@ private:
   std::unique_ptr<Registry> registry;
   std::unique_ptr<AssetManager> asset_manager;
   std::unique_ptr<EventManager> event_manager;
+  uint16_t current_fps;
 };
