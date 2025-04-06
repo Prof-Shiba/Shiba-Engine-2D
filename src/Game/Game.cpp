@@ -120,6 +120,10 @@ void Game::LoadLevel(int level) {
   const SDL_Color COLOR_YELLOW = {255, 255, 0};
   const SDL_Color COLOR_GREEN = {0, 255, 0};
 
+  // TODO: Health bar system for everything with a health component.
+  // It will render the bar under the entities current pos.
+  // It will be green, then yellow, then red, based on health amount.
+
   // Entities & Components
   Entity helicopter = registry->create_entity(); // 500
   helicopter.tag("player");
@@ -137,7 +141,7 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<MovingTextComponent>(0, -15, "Helicopter", "arial-font", COLOR_GREEN);
 
   Entity radar = registry->create_entity();
-  radar.add_component<TransformComponent>(glm::vec2(0, 50), glm::vec2(2.0, 2.0), 0.0);
+  radar.add_component<TransformComponent>(glm::vec2(0, 80), glm::vec2(2.0, 2.0), 0.0);
   radar.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   radar.add_component<SpriteComponent>("radar-image", 64, 64, 0, 0, 4, true);
   radar.add_component<AnimationComponent>(8, 5, true);
