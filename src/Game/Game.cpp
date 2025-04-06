@@ -19,6 +19,7 @@
 #include "../Components/HealthComponent.hpp"
 #include "../Components/ProjectileEmitterComponent.hpp"
 #include "../Components/TextComponent.hpp"
+#include "../Components/MovingTextComponent.hpp"
 #include "../Components/GodModeComponent.hpp"
 #include "../Systems/MovementSystem.hpp"
 #include "../Systems/CameraMovementSystem.hpp"
@@ -31,6 +32,7 @@
 #include "../Systems/ProjectileEmitterSystem.hpp"
 #include "../Systems/ProjectileDurationSystem.hpp"
 #include "../Systems/RenderTextSystem.hpp"
+#include "../Systems/MovingTextSystem.hpp"
 
 uint16_t Game::WINDOW_HEIGHT;
 uint16_t Game::WINDOW_WIDTH;
@@ -65,6 +67,7 @@ void Game::LoadLevel(int level) {
   registry->add_system<ProjectileEmitterSystem>();
   registry->add_system<ProjectileDurationSystem>();
   registry->add_system<RenderTextSystem>();
+  registry->add_system<MovingTextSystem>();
 
   // The linker will find #includes properly, however, when using images etc you must do it from the
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
@@ -74,8 +77,8 @@ void Game::LoadLevel(int level) {
   asset_manager->add_texture(renderer, "radar-image", "./assets/images/radar.png");
   asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
   asset_manager->add_texture(renderer, "bullet-image", "./assets/images/bullet.png");
-  asset_manager->add_font("charriot-font", "./assets/fonts/charriot.ttf", 20);
-  asset_manager->add_font("arial-font", "./assets/fonts/arial.ttf", 20);
+  asset_manager->add_font("charriot-font", "./assets/fonts/charriot.ttf", 16);
+  asset_manager->add_font("arial-font", "./assets/fonts/arial.ttf", 16);
 
   const uint8_t TILE_SIZE = 32;
   uint8_t number_of_map_cols = 25;
@@ -111,7 +114,11 @@ void Game::LoadLevel(int level) {
 
   in_file.close();
   map_width = number_of_map_cols * TILE_SIZE * tile_scale; 
-  map_height = number_of_map_rows * TILE_SIZE * tile_scale; 
+  map_height = number_of_map_rows * TILE_SIZE * tile_scale;
+  
+  const SDL_Color COLOR_RED = {255, 0, 0};
+  const SDL_Color COLOR_YELLOW = {255, 255, 0};
+  const SDL_Color COLOR_GREEN = {0, 255, 0};
 
   // Entities & Components
   Entity helicopter = registry->create_entity(); // 500
@@ -127,16 +134,17 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<HealthComponent>(100);
   helicopter.add_component<ProjectileEmitterComponent>(glm::vec2(500, 500), 0, 2000, 10, true);
   helicopter.add_component<GodModeComponent>(false);
+  helicopter.add_component<MovingTextComponent>(0, -15, "Helicopter", "arial-font", COLOR_GREEN);
 
   Entity radar = registry->create_entity();
-  radar.add_component<TransformComponent>(glm::vec2(0, 0), glm::vec2(2.0, 2.0), 0.0);
+  radar.add_component<TransformComponent>(glm::vec2(0, 50), glm::vec2(2.0, 2.0), 0.0);
   radar.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   radar.add_component<SpriteComponent>("radar-image", 64, 64, 0, 0, 4, true);
   radar.add_component<AnimationComponent>(8, 5, true);
 
   Entity tank = registry->create_entity(); // 502
   tank.group("enemy");
-  tank.add_component<TransformComponent>(glm::vec2(100, 10), glm::vec2(2.0, 2.0), 0.0);
+  tank.add_component<TransformComponent>(glm::vec2(100, 30), glm::vec2(2.0, 2.0), 0.0);
   tank.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   tank.add_component<SpriteComponent>("tank-image", 32, 32, 0, 0, 2); // imgs are 32px, width and height, src rect x, src rect y, then z-index
   tank.add_component<BoxColliderComponent>(60, 60);
@@ -144,10 +152,11 @@ void Game::LoadLevel(int level) {
   tank.add_component<HealthComponent>(100);
   tank.add_component<ProjectileEmitterComponent>(glm::vec2(100, 0), 5000, 10000, 10, false);
   tank.add_component<GodModeComponent>(false);
+  tank.add_component<MovingTextComponent>(7, -10, "Tank", "arial-font", COLOR_RED);
 
   Entity truck = registry->create_entity(); // 503
   truck.group("enemy");
-  truck.add_component<TransformComponent>(glm::vec2(300, 10), glm::vec2(2.0, 2.0), 0.0);
+  truck.add_component<TransformComponent>(glm::vec2(300, 30), glm::vec2(2.0, 2.0), 0.0);
   truck.add_component<RigidBodyComponent>(glm::vec2(0.0, 00.0));
   truck.add_component<SpriteComponent>("truck-image", 32, 32, 0, 0, 1);
   truck.add_component<BoxColliderComponent>(60, 50);
@@ -155,6 +164,7 @@ void Game::LoadLevel(int level) {
   truck.add_component<HealthComponent>(100);
   truck.add_component<ProjectileEmitterComponent>(glm::vec2(0, 100), 2000, 5000, 10, false);
   truck.add_component<GodModeComponent>(true);
+  truck.add_component<MovingTextComponent>(10, -10, "Truck", "arial-font", COLOR_YELLOW);
 
   Entity text = registry->create_entity();
   SDL_Color COLOR_WHITE = {255, 255, 255};
@@ -202,6 +212,7 @@ void Game::Render() {
 
   registry->get_system<RenderSystem>().Update(renderer, asset_manager, camera);
   registry->get_system<RenderTextSystem>().Update(asset_manager, renderer, camera);
+  registry->get_system<MovingTextSystem>().Update(asset_manager, renderer, camera);
 
   if (debug_enabled)
     registry->get_system<RenderCollisionSystem>().Update(renderer, camera);
