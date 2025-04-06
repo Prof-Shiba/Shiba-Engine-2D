@@ -4,7 +4,6 @@
 #include "../Components/TextComponent.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
-#include <memory>
 
 class RenderTextSystem : public System {
 public:
