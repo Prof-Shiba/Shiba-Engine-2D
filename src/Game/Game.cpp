@@ -173,6 +173,10 @@ void Game::LoadLevel(int level) {
   Entity text = registry->create_entity();
   SDL_Color COLOR_WHITE = {255, 255, 255};
   text.add_component<TextComponent>(true, glm::vec2(WINDOW_WIDTH / 2 - 60, 0), "Shibe Engine 2D!", "arial-font", COLOR_WHITE);
+
+  Entity display_fps = registry->create_entity();
+  display_fps.tag("fps");
+  display_fps.add_component<TextComponent>(true, glm::vec2(0, 500), "", "arial-font", COLOR_WHITE);
 }
 
 void Game::Setup() {
@@ -187,6 +191,8 @@ void Game::Update() {
  
   // DT is diff in ticks since last frame, converted to seconds
   double delta_time = (SDL_GetTicks() - ms_previous_frame) / 1000.0;
+
+  current_fps = static_cast<int>(1 / delta_time);
 
   // Store current frame time
   ms_previous_frame = SDL_GetTicks();
@@ -215,7 +221,7 @@ void Game::Render() {
   SDL_RenderClear(renderer);
 
   registry->get_system<RenderSystem>().Update(renderer, asset_manager, camera);
-  registry->get_system<RenderTextSystem>().Update(asset_manager, renderer, camera);
+  registry->get_system<RenderTextSystem>().Update(asset_manager, renderer, camera, current_fps);
   registry->get_system<MovingTextSystem>().Update(asset_manager, renderer, camera);
 
   if (debug_enabled)
