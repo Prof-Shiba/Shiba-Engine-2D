@@ -8,9 +8,9 @@
 #include "../AssetManager/AssetManager.hpp"
 #include "../EventManager/EventManager.hpp"
 
-const uint16_t FPS = 144;
+const uint16_t TARGET_FPS = 144;
 // 1000ms -> 1 second. Each frame should take 16.6 repeating ms
-const uint16_t MS_PER_FRAME = 1000 / FPS;
+const uint16_t MS_PER_FRAME = 1000 / TARGET_FPS;
 const int8_t DEFAULT_MONITOR_NUMBER = -1;
 
 class Game {
