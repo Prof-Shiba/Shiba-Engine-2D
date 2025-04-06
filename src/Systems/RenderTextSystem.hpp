@@ -11,9 +11,12 @@ public:
     require_component<TextComponent>();
   }
 
-  void Update(std::unique_ptr<AssetManager>& asset_manager, SDL_Renderer* renderer, const SDL_Rect& camera) {
+  void Update(std::unique_ptr<AssetManager>& asset_manager, SDL_Renderer* renderer, const SDL_Rect& camera, const uint16_t& current_fps) {
     for (auto& entity: get_system_entities()) {
-      const auto& text = entity.get_component<TextComponent>();
+      auto& text = entity.get_component<TextComponent>();
+
+      if (entity.has_tag("fps"))
+        text.text = "FPS: " + std::to_string(current_fps);
 
       SDL_Surface* surface = TTF_RenderText_Blended(asset_manager->get_font(text.asset_id), text.text.c_str(), text.color);
       SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
