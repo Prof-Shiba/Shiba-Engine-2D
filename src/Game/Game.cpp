@@ -33,6 +33,7 @@
 #include "../Systems/ProjectileDurationSystem.hpp"
 #include "../Systems/RenderTextSystem.hpp"
 #include "../Systems/MovingTextSystem.hpp"
+#include "../Systems/RenderHealthSystem.hpp"
 
 uint16_t Game::WINDOW_HEIGHT;
 uint16_t Game::WINDOW_WIDTH;
@@ -68,6 +69,7 @@ void Game::LoadLevel(int level) {
   registry->add_system<ProjectileDurationSystem>();
   registry->add_system<RenderTextSystem>();
   registry->add_system<MovingTextSystem>();
+  registry->add_system<RenderHealthSystem>();
 
   // The linker will find #includes properly, however, when using images etc you must do it from the
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
@@ -223,6 +225,7 @@ void Game::Render() {
   registry->get_system<RenderSystem>().Update(renderer, asset_manager, camera);
   registry->get_system<RenderTextSystem>().Update(asset_manager, renderer, camera, current_fps);
   registry->get_system<MovingTextSystem>().Update(asset_manager, renderer, camera);
+  registry->get_system<RenderHealthSystem>().Update(renderer, camera);
 
   if (debug_enabled)
     registry->get_system<RenderCollisionSystem>().Update(renderer, camera);
