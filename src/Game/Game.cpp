@@ -122,10 +122,6 @@ void Game::LoadLevel(int level) {
   const SDL_Color COLOR_YELLOW = {255, 255, 0};
   const SDL_Color COLOR_GREEN = {0, 255, 0};
 
-  // TODO: Health bar system for everything with a health component.
-  // It will render the bar under the entities current pos.
-  // It will be green, then yellow, then red, based on health amount.
-
   // Entities & Components
   Entity helicopter = registry->create_entity(); // 500
   helicopter.tag("player");
