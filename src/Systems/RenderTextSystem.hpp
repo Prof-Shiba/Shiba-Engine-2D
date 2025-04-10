@@ -35,6 +35,7 @@ public:
       };
 
       SDL_RenderCopy(renderer, texture, NULL, &dst_rect);
+      SDL_DestroyTexture(texture);
     }
   }
 
