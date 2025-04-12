@@ -34,6 +34,7 @@
 #include "../Systems/RenderTextSystem.hpp"
 #include "../Systems/MovingTextSystem.hpp"
 #include "../Systems/RenderHealthSystem.hpp"
+#include "../Systems/RenderGUISystem.hpp"
 #include "../../libs/imgui/imgui.h"
 #include "../../libs/imgui/backends/imgui_impl_sdl2.h"
 #include "../../libs/imgui/backends/imgui_impl_sdlrenderer2.h"
@@ -73,6 +74,7 @@ void Game::LoadLevel(int level) {
   registry->add_system<RenderTextSystem>();
   registry->add_system<MovingTextSystem>();
   registry->add_system<RenderHealthSystem>();
+  registry->add_system<RenderGUISystem>();
 
   // The linker will find #includes properly, however, when using images etc you must do it from the
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
@@ -228,15 +230,7 @@ void Game::Render() {
 
   if (debug_enabled) {
     registry->get_system<RenderCollisionSystem>().Update(renderer, camera);
-  
-    ImGui_ImplSDLRenderer2_NewFrame();
-    ImGui_ImplSDL2_NewFrame();
-
-    ImGui::NewFrame();
-    ImGui::ShowDemoWindow();
-    ImGui::Render();
-
-    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
+    registry->get_system<RenderGUISystem>().Update(renderer);
   }
 
   // Double buffer
