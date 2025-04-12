@@ -11,7 +11,8 @@ SOURCE_FILES = src/*.cpp \
 							 src/Logger/*.cpp \
 							 src/ECS/*.cpp \
 							 src/AssetManager/*.cpp \
-							 libs/imgui/*.cpp
+							 libs/imgui/*.cpp \
+							 libs/imgui/backends/*.cpp
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -llua 
 OUTPUT = ShibeEngine
 DEBUG_OUTPUT = DEBUG_ENGINE_BUILD
