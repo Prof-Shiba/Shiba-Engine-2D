@@ -1,4 +1,4 @@
-#include <SDL2/SDL.h>
+#include <SDL2/SDL_mouse.h>
 #include <SDL2/SDL_ttf.h>
 #include <cstdint>
 #include <memory>
@@ -34,6 +34,9 @@
 #include "../Systems/RenderTextSystem.hpp"
 #include "../Systems/MovingTextSystem.hpp"
 #include "../Systems/RenderHealthSystem.hpp"
+#include "../../libs/imgui/imgui.h"
+#include "../../libs/imgui/backends/imgui_impl_sdl2.h"
+#include "../../libs/imgui/backends/imgui_impl_sdlrenderer2.h"
 
 uint16_t Game::WINDOW_HEIGHT;
 uint16_t Game::WINDOW_WIDTH;
@@ -223,8 +226,18 @@ void Game::Render() {
   registry->get_system<MovingTextSystem>().Update(asset_manager, renderer, camera);
   registry->get_system<RenderHealthSystem>().Update(renderer, camera);
 
-  if (debug_enabled)
+  if (debug_enabled) {
     registry->get_system<RenderCollisionSystem>().Update(renderer, camera);
+  
+    ImGui_ImplSDLRenderer2_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+
+    ImGui::NewFrame();
+    ImGui::ShowDemoWindow();
+    ImGui::Render();
+
+    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
+  }
 
   // Double buffer
   SDL_RenderPresent(renderer);
@@ -267,6 +280,13 @@ void Game::Initialize() {
     return;
   }
 
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+  ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+  ImGui_ImplSDLRenderer2_Init(renderer);
+
   // Initialize camera view with entire screen area
   camera.x = 0;
   camera.y = 0;
@@ -292,6 +312,8 @@ void Game::ProcessInput() {
   SDL_Event sdl_event;
 
   while (SDL_PollEvent(&sdl_event)) {
+    ImGui_ImplSDL2_ProcessEvent(&sdl_event);
+
     switch (sdl_event.type) {
       case SDL_QUIT:
         is_running = false; 
@@ -314,6 +336,10 @@ void Game::ProcessInput() {
 };
 
 void Game::Destroy() {
+  ImGui_ImplSDLRenderer2_Shutdown();
+  ImGui_ImplSDL2_Shutdown();
+  ImGui::DestroyContext();
+
   SDL_DestroyWindow(window);
   SDL_DestroyRenderer(renderer);
   SDL_Quit();
