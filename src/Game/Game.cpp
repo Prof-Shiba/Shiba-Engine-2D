@@ -230,7 +230,7 @@ void Game::Render() {
 
   if (debug_enabled) {
     registry->get_system<RenderCollisionSystem>().Update(renderer, camera);
-    registry->get_system<RenderGUISystem>().Update(renderer);
+    registry->get_system<RenderGUISystem>().Update(renderer, registry);
   }
 
   // Double buffer
