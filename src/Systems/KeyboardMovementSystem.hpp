@@ -2,7 +2,6 @@
 #include "../ECS/ECS.hpp"
 #include "../EventManager/EventManager.hpp"
 #include "../Events/KeyPressedEvent.hpp"
-#include "../Logger/Logger.hpp"
 #include "../Components/KeyboardControlComponent.hpp"
 #include "../Components/SpriteComponent.hpp"
 #include "../Components/RigidBodyComponent.hpp"
@@ -46,6 +45,10 @@ public:
         case SDLK_LEFT:
           rigid_body.velocity = keyboard_control.left_velocity;
           sprite.src_rect.y = sprite.height * 3;
+          break;
+
+        case SDLK_1: // to pause the entity for debugging purposes
+          rigid_body.velocity = glm::vec2(0);
           break;
       }
     }
