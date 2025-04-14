@@ -92,9 +92,6 @@ void Game::LoadLevel(int level) {
   uint8_t number_of_map_rows = 20;
   float tile_scale = 3.5;
 
-  // FIXME: Some race condition or smth similar here. Occasionally
-  // will not fully load the background, it's just black.
-  // everything else always loads though
   std::ifstream in_file {"./assets/tilemaps/jungle.map"};
   if (in_file) {
     for (int y = 0; y < number_of_map_rows; y++) {
