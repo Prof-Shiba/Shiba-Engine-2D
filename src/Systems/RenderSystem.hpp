@@ -19,12 +19,11 @@ public:
   RenderSystem(const RenderSystem&) = default;
   ~RenderSystem() = default;
 
-   // TODO: In future have layers, background layer, foreground, HUD, etc 
-   // then perhaps i can render each one, some every frame, some once. starting from the background 
-   // and they have their own z_index globally, with each one having its own seperate z_index inside 
-
-  // I hate sorting here. I will change it later, but I just want to get a feel
-  // for how doing it works first.
+  // TODO: In future have layers, background layer, foreground, HUD, etc 
+  // if entity in layer HUD -> render first, background 2nd, etc.
+  // Pass in the layers to SpriteComponent instead of each individual z_index
+ 
+  // NOTE: under what conditions would std::sort actually need to be called?
   void Update(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& asset_manager, SDL_Rect& camera) {
     auto entities = get_system_entities();
 
