@@ -12,6 +12,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
 
+static double ms_last_frame = 0;
+
 class ProjectileEmitterSystem : public System {
 public:
   ProjectileEmitterSystem() {
@@ -24,7 +26,10 @@ public:
   }
 
   void onKeyPressed(KeyPressedEvent& event) {
-    if (event.key_pressed == SDLK_SPACE) {
+    // rate limit, will fire every frame otherwise
+    double time_since_last_bullet = (SDL_GetTicks() - ms_last_frame) / 1000;
+
+    if (event.key_pressed == SDLK_SPACE && time_since_last_bullet >= 0.30) {
       for (auto& entity: get_system_entities()) {
         if (entity.has_tag("player")) {
           const auto& projectile_emitter = entity.get_component<ProjectileEmitterComponent>();
@@ -60,9 +65,10 @@ public:
           projectile.add_component<BoxColliderComponent>(4, 4);
           projectile.add_component<CollisionComponent>();
           projectile.add_component<ProjectileComponent>(projectile_emitter.is_friendly, projectile_emitter.damage, projectile_emitter.projectile_duration);
-          }
-      }
 
+          ms_last_frame = SDL_GetTicks();
+        }
+      }
     }
   }
 
