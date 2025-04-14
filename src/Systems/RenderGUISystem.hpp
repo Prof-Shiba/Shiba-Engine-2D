@@ -1,6 +1,5 @@
 #pragma once
 #include <SDL2/SDL_render.h>
-#include <array>
 #include "../ECS/ECS.hpp"
 #include "../../libs/imgui/imgui.h"
 #include "../../libs/imgui/backends/imgui_impl_sdl2.h"
@@ -32,6 +31,30 @@ public:
       static int32_t enemy_y_pos = 0;
       ImGui::InputInt("Enemy x", &enemy_x_pos);
       ImGui::InputInt("Enemy y", &enemy_y_pos);
+      static int32_t enemy_z_index = 2;
+      ImGui::InputInt("Enemy z-index", &enemy_z_index);
+
+      const static char* sprites[] = { "tank-image", "truck-image"};
+      static int32_t current_sprite = 0;
+      static std::string enemy_name = "";
+      // NOTE: needs to be re-written for when other assets are added
+      (current_sprite == 0) ? enemy_name = "Tank" : enemy_name = "Truck";
+      ImGui::SeparatorText("Sprite image");
+      ImGui::Combo("Sprite selection", &current_sprite, sprites, 2);
+
+      ImGui::SeparatorText("Enemy Transform");
+      static float enemy_scale_x = 2.0;
+      static float enemy_scale_y = 2.0;
+      ImGui::SliderFloat("Enemy X scale", &enemy_scale_x, 0.0, 10.0);
+      ImGui::SliderFloat("Enemy Y scale", &enemy_scale_y, 0.0, 10.0);
+      static float enemy_rotation = 0;
+      ImGui::SliderFloat("Enemy rotation", &enemy_rotation, 0.0, 360);
+
+      ImGui::SeparatorText("Enemy Velocity");
+      static float enemy_velocity_x = 0;
+      static float enemy_velocity_y = 0;
+      ImGui::InputFloat("Enemy Velocity X", &enemy_velocity_x);
+      ImGui::InputFloat("Enemy Velocity Y", &enemy_velocity_y);
 
       ImGui::SeparatorText("Health");
       static int32_t enemy_health = 100;
@@ -39,28 +62,18 @@ public:
       ImGui::SliderInt("Enemy health", &enemy_health, 1, 100);
       ImGui::Checkbox("Enemy Godmode", &enemy_godmode);
 
-      const static char* sprites[] = { "tank-image", "truck-image"};
-      static int32_t current_sprite = 0;
-      static std::string enemy_name = "";
-      (current_sprite == 0) ? enemy_name = "Tank" : enemy_name = "Truck";
-      ImGui::SeparatorText("Sprite image");
-      ImGui::Combo("Sprite selection", &current_sprite, sprites, 2);
-
-      // TODO: Everything else besides pos
-      // Scale, rotation.
-      // Velocity for enemy
-      // Angle and speed of projectiles
+      // TODO: Angle and speed of projectiles
       // Repeat freq and duration of projectiles (in seconds)
 
       // creates invis rect for space
-      ImGui::Dummy(ImVec2(0, 35));
+      ImGui::Dummy(ImVec2(0, 15));
       
       if (ImGui::Button("Spawn enemy")) {
         Entity new_enemy = registry->create_entity();
         new_enemy.group("enemy");
-        new_enemy.add_component<TransformComponent>(glm::vec2(enemy_x_pos, enemy_y_pos), glm::vec2(2.0, 2.0), 0.0);
-        new_enemy.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
-        new_enemy.add_component<SpriteComponent>(sprites[current_sprite], 32, 32, 0, 0, 2);
+        new_enemy.add_component<TransformComponent>(glm::vec2(enemy_x_pos, enemy_y_pos), glm::vec2(enemy_scale_x, enemy_scale_y), enemy_rotation);
+        new_enemy.add_component<RigidBodyComponent>(glm::vec2(enemy_velocity_x, enemy_velocity_y));
+        new_enemy.add_component<SpriteComponent>(sprites[current_sprite], 32, 32, 0, 0, enemy_z_index);
         new_enemy.add_component<BoxColliderComponent>(60, 60);
         new_enemy.add_component<CollisionComponent>();
         new_enemy.add_component<HealthComponent>(enemy_health);
