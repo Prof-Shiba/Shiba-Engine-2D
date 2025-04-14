@@ -22,10 +22,10 @@ class RenderCollisionSystem : public System {
       auto& is_colliding = entity.get_component<CollisionComponent>().is_colliding;
 
       SDL_Rect rect {
-        static_cast<int>(transform.position.x + collider.offset.x - camera.x),
-        static_cast<int>(transform.position.y + collider.offset.y - camera.y),
-        static_cast<int>(collider.width),
-        static_cast<int>(collider.height)
+        static_cast<int>(transform.position.x + collider.offset.x * transform.scale.x - camera.x),
+        static_cast<int>(transform.position.y + collider.offset.y * transform.scale.y - camera.y),
+        static_cast<int>(collider.width * transform.scale.x) / 2,
+        static_cast<int>(collider.height * transform.scale.y) / 2
       };
 
       if (is_colliding) // draw red if colliding
