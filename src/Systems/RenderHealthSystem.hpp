@@ -25,8 +25,8 @@ public:
       // every single time! Find a better way
       // of doing this! 2025-04-09
       if (health.health_amount != 100) {
-        uint16_t missing_health = 100 - health.health_amount;
-        while (missing_health != 0) {
+        int16_t missing_health = 100 - health.health_amount;
+        while (missing_health > 0) {
           width -= 6;
           missing_health -= 10;
         }
