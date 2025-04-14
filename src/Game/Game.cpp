@@ -134,7 +134,7 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   helicopter.add_component<SpriteComponent>("helicopter-image", 32, 32, 0, 0, 3);
   helicopter.add_component<AnimationComponent>(2, 10, true);
-  helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -360), glm::vec2(360, 0), glm::vec2(0, 360), glm::vec2(-360, 0));
+  helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -220), glm::vec2(220, 0), glm::vec2(0, 220), glm::vec2(-220, 0));
   helicopter.add_component<BoxColliderComponent>(60, 60);
   helicopter.add_component<CollisionComponent>();
   helicopter.add_component<CameraComponent>();
@@ -169,7 +169,7 @@ void Game::LoadLevel(int level) {
   truck.add_component<BoxColliderComponent>(60, 50);
   truck.add_component<CollisionComponent>();
   truck.add_component<HealthComponent>(100);
-  truck.add_component<ProjectileEmitterComponent>(glm::vec2(0, 100), 2000, 5000, 10, false);
+  truck.add_component<ProjectileEmitterComponent>(glm::vec2(0, 100), 1000, 5000, 10, false);
   truck.add_component<GodModeComponent>(true);
   truck.add_component<MovingTextComponent>(10, -10, "Truck", "arial-font", COLOR_YELLOW);
 
