@@ -24,52 +24,53 @@ public:
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
+    static int32_t enemy_x_pos = 0;
+    static int32_t enemy_y_pos = 0;
+    static int32_t enemy_z_index = 2;
+    const static char* sprites[] = { "tank-image", "truck-image"};
+    static int32_t current_sprite = 0;
+    static std::string enemy_name = "";
+    static float enemy_scale_x = 2.0;
+    static float enemy_scale_y = 2.0;
+    static float enemy_rotation = 0;
+    static float enemy_velocity_x = 0;
+    static float enemy_velocity_y = 0;
+    static int32_t enemy_health = 100;
+    static bool enemy_godmode = false;
+    static int32_t proj_vel_x = 0;
+    static int32_t proj_vel_y = 0;
+    static int32_t proj_repeat_speed = 5;
+    static int32_t proj_duration = 5;
+
     if (ImGui::Begin("Spawn Enemies")) {
 
       ImGui::SeparatorText("Position");
-      static int32_t enemy_x_pos = 0;
-      static int32_t enemy_y_pos = 0;
       ImGui::InputInt("Enemy x", &enemy_x_pos);
       ImGui::InputInt("Enemy y", &enemy_y_pos);
-      static int32_t enemy_z_index = 2;
       ImGui::InputInt("Enemy z-index", &enemy_z_index);
 
-      const static char* sprites[] = { "tank-image", "truck-image"};
-      static int32_t current_sprite = 0;
-      static std::string enemy_name = "";
       // NOTE: needs to be re-written for when other assets are added
       (current_sprite == 0) ? enemy_name = "Tank" : enemy_name = "Truck";
       ImGui::SeparatorText("Sprite image");
       ImGui::Combo("Sprite selection", &current_sprite, sprites, 2);
 
       ImGui::SeparatorText("Transform");
-      static float enemy_scale_x = 2.0;
-      static float enemy_scale_y = 2.0;
       ImGui::SliderFloat("Enemy X scale", &enemy_scale_x, 0.0, 10.0);
       ImGui::SliderFloat("Enemy Y scale", &enemy_scale_y, 0.0, 10.0);
-      static float enemy_rotation = 0;
       ImGui::SliderFloat("Enemy rotation", &enemy_rotation, 0.0, 360);
 
       ImGui::SeparatorText("Velocity");
-      static float enemy_velocity_x = 0;
-      static float enemy_velocity_y = 0;
       ImGui::InputFloat("Enemy Velocity X", &enemy_velocity_x);
       ImGui::InputFloat("Enemy Velocity Y", &enemy_velocity_y);
 
       ImGui::SeparatorText("Health");
-      static int32_t enemy_health = 100;
-      static bool enemy_godmode = false;
       ImGui::SliderInt("Enemy health", &enemy_health, 1, 100);
       ImGui::Checkbox("Enemy Godmode", &enemy_godmode);
 
       ImGui::SeparatorText("Projectiles");
-      static int32_t proj_vel_x = 0;
       ImGui::SliderInt("Projectile X Velocity", &proj_vel_x, 1, 2000);
-      static int32_t proj_vel_y = 0;
       ImGui::SliderInt("Projectile Y Velocity", &proj_vel_y, 1, 2000);
-      static int32_t proj_repeat_speed = 5;
       ImGui::SliderInt("Repeat speed (seconds)", &proj_repeat_speed, 1, 30);
-      static int32_t proj_duration = 5;
       ImGui::SliderInt("Projectile duration (seconds)", &proj_duration, 1, 30);
 
       // creates invis rect for space
