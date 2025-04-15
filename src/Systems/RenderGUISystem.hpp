@@ -31,7 +31,7 @@ public:
     static int32_t enemy_z_index = 2;
     static int32_t current_sprite = 0;
     static int32_t enemy_health = 100;
-    static int32_t proj_vel_x = 0;
+    static int32_t proj_vel_x = 150;
     static int32_t proj_vel_y = 0;
     static int32_t proj_repeat_speed = 5;
     static int32_t proj_duration = 5;
