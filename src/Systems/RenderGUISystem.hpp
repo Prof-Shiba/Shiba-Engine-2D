@@ -24,23 +24,23 @@ public:
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
+    const static char* sprites[] = { "tank-image", "truck-image"};
+    static bool enemy_godmode = false;
     static int32_t enemy_x_pos = 0;
     static int32_t enemy_y_pos = 0;
     static int32_t enemy_z_index = 2;
-    const static char* sprites[] = { "tank-image", "truck-image"};
     static int32_t current_sprite = 0;
-    static std::string enemy_name = "";
+    static int32_t enemy_health = 100;
+    static int32_t proj_vel_x = 0;
+    static int32_t proj_vel_y = 0;
+    static int32_t proj_repeat_speed = 5;
+    static int32_t proj_duration = 5;
     static float enemy_scale_x = 2.0;
     static float enemy_scale_y = 2.0;
     static float enemy_rotation = 0;
     static float enemy_velocity_x = 0;
     static float enemy_velocity_y = 0;
-    static int32_t enemy_health = 100;
-    static bool enemy_godmode = false;
-    static int32_t proj_vel_x = 0;
-    static int32_t proj_vel_y = 0;
-    static int32_t proj_repeat_speed = 5;
-    static int32_t proj_duration = 5;
+    static std::string enemy_name = "";
 
     if (ImGui::Begin("Spawn Enemies")) {
 
