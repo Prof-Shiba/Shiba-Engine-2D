@@ -42,7 +42,7 @@ public:
       ImGui::SeparatorText("Sprite image");
       ImGui::Combo("Sprite selection", &current_sprite, sprites, 2);
 
-      ImGui::SeparatorText("Enemy Transform");
+      ImGui::SeparatorText("Transform");
       static float enemy_scale_x = 2.0;
       static float enemy_scale_y = 2.0;
       ImGui::SliderFloat("Enemy X scale", &enemy_scale_x, 0.0, 10.0);
@@ -50,7 +50,7 @@ public:
       static float enemy_rotation = 0;
       ImGui::SliderFloat("Enemy rotation", &enemy_rotation, 0.0, 360);
 
-      ImGui::SeparatorText("Enemy Velocity");
+      ImGui::SeparatorText("Velocity");
       static float enemy_velocity_x = 0;
       static float enemy_velocity_y = 0;
       ImGui::InputFloat("Enemy Velocity X", &enemy_velocity_x);
@@ -62,8 +62,15 @@ public:
       ImGui::SliderInt("Enemy health", &enemy_health, 1, 100);
       ImGui::Checkbox("Enemy Godmode", &enemy_godmode);
 
-      // TODO: Angle and speed of projectiles
-      // Repeat freq and duration of projectiles (in seconds)
+      ImGui::SeparatorText("Projectiles");
+      static int32_t proj_vel_x = 0;
+      ImGui::SliderInt("Projectile X Velocity", &proj_vel_x, 1, 2000);
+      static int32_t proj_vel_y = 0;
+      ImGui::SliderInt("Projectile Y Velocity", &proj_vel_y, 1, 2000);
+      static int32_t proj_repeat_speed = 5;
+      ImGui::SliderInt("Repeat speed (seconds)", &proj_repeat_speed, 1, 30);
+      static int32_t proj_duration = 5;
+      ImGui::SliderInt("Projectile duration (seconds)", &proj_duration, 1, 30);
 
       // creates invis rect for space
       ImGui::Dummy(ImVec2(0, 15));
@@ -77,7 +84,7 @@ public:
         new_enemy.add_component<BoxColliderComponent>(60, 60);
         new_enemy.add_component<CollisionComponent>();
         new_enemy.add_component<HealthComponent>(enemy_health);
-        new_enemy.add_component<ProjectileEmitterComponent>(glm::vec2(100, 0), 5000, 10000, 10, false);
+        new_enemy.add_component<ProjectileEmitterComponent>(glm::vec2(proj_vel_x, proj_vel_y), proj_repeat_speed * 1000, proj_duration * 1000, 10, false);
         new_enemy.add_component<GodModeComponent>(enemy_godmode);
         new_enemy.add_component<MovingTextComponent>(7, -10, enemy_name.c_str(), "arial-font", SDL_Color {255, 0, 0});
       }
