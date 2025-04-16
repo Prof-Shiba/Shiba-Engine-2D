@@ -47,7 +47,7 @@ public:
 
       SDL_RenderCopyEx(renderer, asset_manager->get_texture(sprite.asset_id), 
                      &source_rect, &destination_rect, transform.rotation,
-                     NULL, SDL_FLIP_NONE);
+                     NULL, sprite.flip);
     }
   }
 
