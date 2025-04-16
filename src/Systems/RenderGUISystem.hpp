@@ -35,6 +35,8 @@ public:
     static int32_t proj_vel_y = 0;
     static int32_t proj_repeat_speed = 5;
     static int32_t proj_duration = 5;
+    static int32_t box_collider_x = 32;
+    static int32_t box_collider_y = 32;
     static float enemy_scale_x = 2.0;
     static float enemy_scale_y = 2.0;
     static float enemy_rotation = 0;
@@ -57,6 +59,10 @@ public:
       ImGui::SeparatorText("Transform");
       ImGui::SliderFloat("Enemy X scale", &enemy_scale_x, 0.0, 10.0);
       ImGui::SliderFloat("Enemy Y scale", &enemy_scale_y, 0.0, 10.0);
+      // TODO: Try to find a consistent way of having box collider dimensions auto set.
+      // I'm not sure if this is feasible currently though
+      ImGui::InputInt("Box Collider X", &box_collider_x);
+      ImGui::InputInt("Box Collider Y", &box_collider_y);
       ImGui::SliderFloat("Enemy rotation", &enemy_rotation, 0.0, 360);
 
       ImGui::SeparatorText("Velocity");
@@ -82,7 +88,7 @@ public:
         new_enemy.add_component<TransformComponent>(glm::vec2(enemy_x_pos, enemy_y_pos), glm::vec2(enemy_scale_x, enemy_scale_y), enemy_rotation);
         new_enemy.add_component<RigidBodyComponent>(glm::vec2(enemy_velocity_x, enemy_velocity_y));
         new_enemy.add_component<SpriteComponent>(sprites[current_sprite], 32, 32, 0, 0, enemy_z_index);
-        new_enemy.add_component<BoxColliderComponent>(60, 60);
+        new_enemy.add_component<BoxColliderComponent>(box_collider_x, box_collider_y);
         new_enemy.add_component<CollisionComponent>();
         new_enemy.add_component<HealthComponent>(enemy_health);
         new_enemy.add_component<ProjectileEmitterComponent>(glm::vec2(proj_vel_x, proj_vel_y), proj_repeat_speed * 1000, proj_duration * 1000, 10, false);
