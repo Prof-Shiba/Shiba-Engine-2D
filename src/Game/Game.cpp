@@ -133,7 +133,7 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<SpriteComponent>("helicopter-image", 32, 32, 0, 0, 3);
   helicopter.add_component<AnimationComponent>(2, 10, true);
   helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -320), glm::vec2(320, 0), glm::vec2(0, 320), glm::vec2(-320, 0));
-  helicopter.add_component<BoxColliderComponent>(60, 60);
+  helicopter.add_component<BoxColliderComponent>(32, 32);
   helicopter.add_component<CollisionComponent>();
   helicopter.add_component<CameraComponent>();
   helicopter.add_component<HealthComponent>(100);
@@ -152,7 +152,7 @@ void Game::LoadLevel(int level) {
   tank.add_component<TransformComponent>(glm::vec2(450, 860), glm::vec2(2.0, 2.0), 0.0);
   tank.add_component<RigidBodyComponent>(glm::vec2(90.0, 0.0));
   tank.add_component<SpriteComponent>("tank-image", 32, 32, 0, 0, 2); // imgs are 32px, width and height, src rect x, src rect y, then z-index
-  tank.add_component<BoxColliderComponent>(60, 60);
+  tank.add_component<BoxColliderComponent>(32, 32);
   tank.add_component<CollisionComponent>();
   tank.add_component<HealthComponent>(100);
   tank.add_component<ProjectileEmitterComponent>(glm::vec2(250, 0), 2000, 10000, 10, false);
@@ -164,7 +164,7 @@ void Game::LoadLevel(int level) {
   truck.add_component<TransformComponent>(glm::vec2(180, 860), glm::vec2(2.0, 2.0), 0.0);
   truck.add_component<RigidBodyComponent>(glm::vec2(0.0, 00.0));
   truck.add_component<SpriteComponent>("truck-image", 32, 32, 0, 0, 1);
-  truck.add_component<BoxColliderComponent>(60, 50);
+  truck.add_component<BoxColliderComponent>(32, 32);
   truck.add_component<CollisionComponent>();
   truck.add_component<HealthComponent>(100);
   // truck.add_component<ProjectileEmitterComponent>(glm::vec2(100, 0), 1000, 5000, 10, false);
