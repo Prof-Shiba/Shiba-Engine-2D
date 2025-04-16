@@ -132,7 +132,7 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   helicopter.add_component<SpriteComponent>("helicopter-image", 32, 32, 0, 0, 3);
   helicopter.add_component<AnimationComponent>(2, 10, true);
-  helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -220), glm::vec2(220, 0), glm::vec2(0, 220), glm::vec2(-220, 0));
+  helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -320), glm::vec2(320, 0), glm::vec2(0, 320), glm::vec2(-320, 0));
   helicopter.add_component<BoxColliderComponent>(60, 60);
   helicopter.add_component<CollisionComponent>();
   helicopter.add_component<CameraComponent>();
@@ -187,7 +187,7 @@ void Game::LoadLevel(int level) {
 
   Entity text = registry->create_entity();
   SDL_Color COLOR_WHITE = {255, 255, 255};
-  text.add_component<TextComponent>(true, glm::vec2(WINDOW_WIDTH / 2 - 60, 0), "Shibe Engine 2D!", "arial-font", COLOR_WHITE);
+  text.add_component<TextComponent>(true, glm::vec2(WINDOW_WIDTH / 2 - 60, 0), "Shiba Engine 2D!", "arial-font", COLOR_WHITE);
 
   Entity display_fps = registry->create_entity();
   display_fps.tag("fps");
@@ -269,7 +269,7 @@ void Game::Initialize() {
   WINDOW_HEIGHT = 1440;
 
   window = SDL_CreateWindow(
-    "Shibe Engine",
+    "Shiba Engine",
     SDL_WINDOWPOS_CENTERED,
     SDL_WINDOWPOS_CENTERED,
     WINDOW_WIDTH,
