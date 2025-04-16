@@ -15,6 +15,8 @@ public:
   }
   ~CollisionSystem() = default;
 
+  // FIXME: Doesn't work when scaling entities up. Hitbox acts as if they were still scaled down.
+  // Must account for scale factor.
   void Update(std::unique_ptr<EventManager>& event_manager) {
     auto entities = get_system_entities();
     
