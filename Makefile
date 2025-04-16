@@ -14,8 +14,8 @@ SOURCE_FILES = src/*.cpp \
 							 libs/imgui/*.cpp \
 							 libs/imgui/backends/*.cpp
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -llua 
-OUTPUT = ShibeEngine
-DEBUG_OUTPUT = DEBUG_ENGINE_BUILD
+OUTPUT = ShibaEngine
+DEBUG_OUTPUT = ShibaEngineDebug
 
 build:
 		$(CC) $(COMPILER_FLAGS) $(LANG_STD) $(INCLUDE_PATHS) $(SOURCE_FILES) $(LINKER_FLAGS) -o $(OUTPUT);
