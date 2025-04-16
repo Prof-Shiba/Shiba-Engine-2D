@@ -82,6 +82,7 @@ public:
         Logger::Warn("Killed entity that was out of bounds!");
       }
 
+      // FIXME: Player can force their way out of the map by holding the move key
       if ((entity_x_out_of_bounds && entity.has_tag("player")) || (entity_y_out_of_bounds && entity.has_tag("player"))) {
         Logger::Warn("Player at map boundary!");
         if (entity_x_out_of_bounds && entity_y_out_of_bounds) {
