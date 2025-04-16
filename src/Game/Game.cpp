@@ -84,6 +84,7 @@ void Game::LoadLevel(int level) {
   asset_manager->add_texture(renderer, "radar-image", "./assets/images/radar.png");
   asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
   asset_manager->add_texture(renderer, "bullet-image", "./assets/images/bullet.png");
+  asset_manager->add_texture(renderer, "tree-image", "./assets/images/tree.png");
   asset_manager->add_font("charriot-font", "./assets/fonts/charriot.ttf", 16);
   asset_manager->add_font("arial-font", "./assets/fonts/arial.ttf", 16);
 
@@ -141,34 +142,48 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<MovingTextComponent>(0, -15, "Helicopter", "arial-font", COLOR_GREEN);
 
   Entity radar = registry->create_entity();
-  radar.add_component<TransformComponent>(glm::vec2(0, 80), glm::vec2(2.0, 2.0), 0.0);
+  radar.add_component<TransformComponent>(glm::vec2(0, 120), glm::vec2(1.5, 1.5), 0.0);
   radar.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   radar.add_component<SpriteComponent>("radar-image", 64, 64, 0, 0, 4, true);
   radar.add_component<AnimationComponent>(8, 5, true);
 
   Entity tank = registry->create_entity(); // 502
   tank.group("enemy");
-  tank.add_component<TransformComponent>(glm::vec2(100, 30), glm::vec2(2.0, 2.0), 0.0);
-  tank.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
+  tank.add_component<TransformComponent>(glm::vec2(450, 860), glm::vec2(2.0, 2.0), 0.0);
+  tank.add_component<RigidBodyComponent>(glm::vec2(90.0, 0.0));
   tank.add_component<SpriteComponent>("tank-image", 32, 32, 0, 0, 2); // imgs are 32px, width and height, src rect x, src rect y, then z-index
   tank.add_component<BoxColliderComponent>(60, 60);
   tank.add_component<CollisionComponent>();
   tank.add_component<HealthComponent>(100);
-  tank.add_component<ProjectileEmitterComponent>(glm::vec2(100, 0), 5000, 10000, 10, false);
+  tank.add_component<ProjectileEmitterComponent>(glm::vec2(250, 0), 2000, 10000, 10, false);
   tank.add_component<GodModeComponent>(false);
   tank.add_component<MovingTextComponent>(7, -10, "Tank", "arial-font", COLOR_RED);
 
   Entity truck = registry->create_entity(); // 503
   truck.group("enemy");
-  truck.add_component<TransformComponent>(glm::vec2(300, 30), glm::vec2(2.0, 2.0), 0.0);
+  truck.add_component<TransformComponent>(glm::vec2(180, 860), glm::vec2(2.0, 2.0), 0.0);
   truck.add_component<RigidBodyComponent>(glm::vec2(0.0, 00.0));
   truck.add_component<SpriteComponent>("truck-image", 32, 32, 0, 0, 1);
   truck.add_component<BoxColliderComponent>(60, 50);
   truck.add_component<CollisionComponent>();
   truck.add_component<HealthComponent>(100);
-  truck.add_component<ProjectileEmitterComponent>(glm::vec2(0, 100), 1000, 5000, 10, false);
+  // truck.add_component<ProjectileEmitterComponent>(glm::vec2(100, 0), 1000, 5000, 10, false);
   truck.add_component<GodModeComponent>(true);
   truck.add_component<MovingTextComponent>(10, -10, "Truck", "arial-font", COLOR_YELLOW);
+
+  Entity tree0 = registry->create_entity();
+  tree0.group("object");
+  tree0.add_component<TransformComponent>(glm::vec2(400, 860), glm::vec2(2.0, 2.0), 0.0);
+  tree0.add_component<SpriteComponent>("tree-image", 16, 32, 0, 0, 3);
+  tree0.add_component<BoxColliderComponent>(16, 32);
+  tree0.add_component<CollisionComponent>();
+
+  Entity tree1 = registry->create_entity();
+  tree1.group("object");
+  tree1.add_component<TransformComponent>(glm::vec2(700, 860), glm::vec2(2.0, 2.0), 0.0);
+  tree1.add_component<SpriteComponent>("tree-image", 16, 32, 0, 0, 3);
+  tree1.add_component<BoxColliderComponent>(16, 32);
+  tree1.add_component<CollisionComponent>();
 
   Entity text = registry->create_entity();
   SDL_Color COLOR_WHITE = {255, 255, 255};
@@ -201,6 +216,7 @@ void Game::Update() {
   event_manager->reset();
 
   // Only valid for this current frame
+  registry->get_system<MovementSystem>().ListenForEvents(event_manager);
   registry->get_system<DamageSystem>().ListenForEvents(event_manager);
   registry->get_system<KeyboardMovementSystem>().ListenForEvents(event_manager);
   registry->get_system<ProjectileEmitterSystem>().ListenForEvents(event_manager);
