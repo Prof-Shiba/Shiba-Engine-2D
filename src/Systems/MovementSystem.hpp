@@ -62,23 +62,36 @@ public:
   }
 
   void Update(double delta_time) {
-    for (auto entity : get_system_entities()) {
+    for (auto& entity : get_system_entities()) {
       auto& transform = entity.get_component<TransformComponent>();
-      const auto rigid_body = entity.get_component<RigidBodyComponent>();
+      auto& rigid_body = entity.get_component<RigidBodyComponent>();
 
       transform.position.x += rigid_body.velocity.x * delta_time;
       transform.position.y += rigid_body.velocity.y * delta_time;
 
-      bool entity_out_of_bounds = (
-        transform.position.x < 0 ||
-        transform.position.x > Game::map_width ||
-        transform.position.y < 0 ||
-        transform.position.y > Game::map_height
+      bool entity_x_out_of_bounds = (
+        transform.position.x <= 0 || transform.position.x >= Game::map_width - 60
       );
 
-      if (entity_out_of_bounds && !entity.has_tag("player")) {
+      bool entity_y_out_of_bounds = (
+        transform.position.y <= 0 || transform.position.y >= Game::map_height - 60 // NOTE: offset needed due to scale height difference, remove later
+      );
+
+      if ((entity_x_out_of_bounds && !entity.has_tag("player")) || (entity_y_out_of_bounds && !entity.has_tag("player"))) {
         entity.remove();
         Logger::Warn("Killed entity that was out of bounds!");
+      }
+
+      if ((entity_x_out_of_bounds && entity.has_tag("player")) || (entity_y_out_of_bounds && entity.has_tag("player"))) {
+        Logger::Warn("Player at map boundary!");
+        if (entity_x_out_of_bounds && entity_y_out_of_bounds) {
+          rigid_body.velocity.x = 0;
+          rigid_body.velocity.y = 0;
+        }
+        else if (entity_x_out_of_bounds)
+          rigid_body.velocity.x = 0;
+        else
+          rigid_body.velocity.y = 0;
       }
 
     }
