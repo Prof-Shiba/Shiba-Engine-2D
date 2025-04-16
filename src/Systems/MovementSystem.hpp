@@ -2,6 +2,7 @@
 #include "../ECS/ECS.hpp"
 #include "../Components/RigidBodyComponent.hpp"
 #include "../Components/TransformComponent.hpp"
+#include "../Game/Game.hpp"
 
 class MovementSystem : public System {
 public:
@@ -20,6 +21,19 @@ public:
 
       transform.position.x += rigid_body.velocity.x * delta_time;
       transform.position.y += rigid_body.velocity.y * delta_time;
+
+      bool entity_out_of_bounds = (
+        transform.position.x < 0 ||
+        transform.position.x > Game::map_width ||
+        transform.position.y < 0 ||
+        transform.position.y > Game::map_height
+      );
+
+      if (entity_out_of_bounds && !entity.has_tag("player")) {
+        entity.remove();
+        Logger::Warn("Killed entity that was out of bounds!");
+      }
+
     }
   }
 
