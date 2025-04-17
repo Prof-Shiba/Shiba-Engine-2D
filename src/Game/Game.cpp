@@ -167,7 +167,6 @@ void Game::LoadLevel(int level) {
   truck.add_component<BoxColliderComponent>(32, 32);
   truck.add_component<CollisionComponent>();
   truck.add_component<HealthComponent>(100);
-  // truck.add_component<ProjectileEmitterComponent>(glm::vec2(100, 0), 1000, 5000, 10, false);
   truck.add_component<GodModeComponent>(true);
   truck.add_component<MovingTextComponent>(10, -10, "Truck", "arial-font", COLOR_YELLOW);
 
