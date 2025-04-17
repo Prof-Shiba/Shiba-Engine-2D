@@ -43,7 +43,7 @@ public:
         transform.position.y > camera.y + camera.h
       );
 
-      if (entity_outside_camera_view) continue;
+      if (entity_outside_camera_view && !sprite.is_fixed) continue;
 
       // Set source rectangle of OG sprite texture, needed for RenderCopy
       SDL_Rect source_rect = sprite.src_rect;
