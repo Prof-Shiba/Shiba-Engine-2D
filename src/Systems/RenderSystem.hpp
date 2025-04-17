@@ -24,6 +24,7 @@ public:
   // Pass in the layers to SpriteComponent instead of each individual z_index
  
   // NOTE: under what conditions would std::sort actually need to be called?
+  // how about only sorting when a new entity is added?
   void Update(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& asset_manager, SDL_Rect& camera) {
     auto entities = get_system_entities();
 
@@ -34,6 +35,15 @@ public:
     for (auto& entity: entities) {
       const auto& transform = entity.get_component<TransformComponent>();
       const auto& sprite = entity.get_component<SpriteComponent>();
+
+      bool entity_outside_camera_view = (
+        transform.position.x + (transform.scale.x * sprite.width) < camera.x ||
+        transform.position.x > camera.x + camera.w ||
+        transform.position.y + (transform.scale.y * sprite.height) < camera.y ||
+        transform.position.y > camera.y + camera.h
+      );
+
+      if (entity_outside_camera_view) continue;
 
       // Set source rectangle of OG sprite texture, needed for RenderCopy
       SDL_Rect source_rect = sprite.src_rect;
