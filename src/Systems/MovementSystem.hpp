@@ -8,6 +8,8 @@
 #include "../Components/SpriteComponent.hpp"
 #include "../Game/Game.hpp"
 
+const static uint8_t resolution_offset = 60; // NOTE: w/o this the borders aren't properly defined.
+
 class MovementSystem : public System {
 public:
   MovementSystem() {
@@ -39,10 +41,13 @@ public:
 
   void object_hit_player(Entity object, Entity player) {
     auto& rigid_body = player.get_component<RigidBodyComponent>();
-    // if (rigid_body.velocity.x != 0)
-      rigid_body.velocity.x = 0;
-    // if (rigid_body.velocity.y != 0)
-      rigid_body.velocity.y = 0;
+    rigid_body.velocity.x = 0;
+    rigid_body.velocity.y = 0;
+  }
+
+  void update_out_of_bounds_pos(TransformComponent& transform, const bool x, const bool y) {
+    if (x) (transform.position.x >= Game::map_width - resolution_offset) ? transform.position.x -= 1 : transform.position.x += 1;
+    if (y) (transform.position.y >= Game::map_height - resolution_offset) ? transform.position.y -= 1 : transform.position.y += 1;
   }
 
   void object_hit_enemy(Entity object, Entity enemy) {
@@ -70,11 +75,11 @@ public:
       transform.position.y += rigid_body.velocity.y * delta_time;
 
       bool entity_x_out_of_bounds = (
-        transform.position.x <= 0 || transform.position.x >= Game::map_width - 60
+        transform.position.x <= 0 || transform.position.x >= Game::map_width - resolution_offset
       );
 
       bool entity_y_out_of_bounds = (
-        transform.position.y <= 0 || transform.position.y >= Game::map_height - 60 // NOTE: offset needed due to scale height difference, remove later
+        transform.position.y <= 0 || transform.position.y >= Game::map_height - resolution_offset
       );
 
       if ((entity_x_out_of_bounds && !entity.has_tag("player")) || (entity_y_out_of_bounds && !entity.has_tag("player"))) {
@@ -82,17 +87,21 @@ public:
         Logger::Warn("Killed entity that was out of bounds!");
       }
 
-      // FIXME: Player can force their way out of the map by holding the move key
       if ((entity_x_out_of_bounds && entity.has_tag("player")) || (entity_y_out_of_bounds && entity.has_tag("player"))) {
         Logger::Warn("Player at map boundary!");
         if (entity_x_out_of_bounds && entity_y_out_of_bounds) {
           rigid_body.velocity.x = 0;
           rigid_body.velocity.y = 0;
+          update_out_of_bounds_pos(transform, true, true);
         }
-        else if (entity_x_out_of_bounds)
+        else if (entity_x_out_of_bounds) {
           rigid_body.velocity.x = 0;
-        else
+          update_out_of_bounds_pos(transform, true, false);
+        }
+        else {
           rigid_body.velocity.y = 0;
+          update_out_of_bounds_pos(transform, false, true);
+        }
       }
 
     }
