@@ -142,7 +142,7 @@ void Game::LoadLevel(int level) {
   helicopter.add_component<MovingTextComponent>(0, -15, "Helicopter", "arial-font", COLOR_GREEN);
 
   Entity radar = registry->create_entity();
-  radar.add_component<TransformComponent>(glm::vec2(0, 120), glm::vec2(1.5, 1.5), 0.0);
+  radar.add_component<TransformComponent>(glm::vec2(10, 50), glm::vec2(2.0, 2.0), 0.0);
   radar.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   radar.add_component<SpriteComponent>("radar-image", 64, 64, 0, 0, 4, true);
   radar.add_component<AnimationComponent>(8, 5, true);
