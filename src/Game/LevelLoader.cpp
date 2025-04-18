@@ -24,56 +24,214 @@ LevelLoader::~LevelLoader() {
   Logger::Log("LevelLoader destructor called!");
 }
 
-void LevelLoader::LoadLevel(uint8_t level, const std::unique_ptr<Registry>& registry, const std::unique_ptr<AssetManager>& asset_manager, SDL_Renderer* renderer) {
-  sol::state lua;
-  lua.open_libraries(sol::lib::base);
+void LevelLoader::LoadLevel(sol::state& lua, uint8_t level_num, const std::unique_ptr<Registry>& registry, const std::unique_ptr<AssetManager>& asset_manager, SDL_Renderer* renderer) {
+  // Read script
+  sol::load_result script = lua.load_file("./assets/scripts/level" + std::to_string(level_num) + ".lua");
 
+  if (!script.valid()) {
+    sol::error err = script;
+    std::string err_message = err.what();
+    Logger::Err("ERROR LOADING LUA SCRIPT: " + err_message);
+    return;
+  }
 
-  // // The linker will find #includes properly, however, when using images etc you must do it from the
-  // // makefiles perspective. It lives in the main dir, outside this /src/Game dir
-  // asset_manager->add_texture(renderer, "tank-image", "./assets/images/tank-tiger-right.png");
-  // asset_manager->add_texture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
-  // asset_manager->add_texture(renderer, "helicopter-image", "./assets/images/chopper-spritesheet.png");
-  // asset_manager->add_texture(renderer, "radar-image", "./assets/images/radar.png");
-  // asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
-  // asset_manager->add_texture(renderer, "bullet-image", "./assets/images/bullet.png");
-  // asset_manager->add_texture(renderer, "tree-image", "./assets/images/tree.png");
-  // asset_manager->add_font("charriot-font", "./assets/fonts/charriot.ttf", 16);
-  // asset_manager->add_font("arial-font", "./assets/fonts/arial.ttf", 16);
-  //
-  // const uint8_t TILE_SIZE = 32;
-  // uint8_t number_of_map_cols = 25;
-  // uint8_t number_of_map_rows = 20;
-  // float tile_scale = 3.5;
-  //
-  // std::ifstream in_file {"./assets/tilemaps/jungle.map"};
-  // if (in_file) {
-  //   for (int y = 0; y < number_of_map_rows; y++) {
-  //     for (int x = 0; x < number_of_map_cols; x++) {
-  //       char ch;
-  //
-  //       in_file.get(ch);
-  //       uint16_t src_rect_y = std::atoi(&ch) * TILE_SIZE;
-  //
-  //       in_file.get(ch);
-  //       uint16_t src_rect_x = std::atoi(&ch) * TILE_SIZE;
-  //
-  //       in_file.ignore();
-  //
-  //       Entity map_tile = registry->create_entity();
-  //       map_tile.group("tile");
-  //       map_tile.add_component<TransformComponent>(glm::vec2(x * (tile_scale * TILE_SIZE), y * (tile_scale * TILE_SIZE)), glm::vec2(tile_scale, tile_scale), 0.0);
-  //       map_tile.add_component<SpriteComponent>("jungle-tilemap", TILE_SIZE, TILE_SIZE, src_rect_x, src_rect_y, 0, false);
-  //     }
-  //   }
-  // } else {
-  //   Logger::Err("Failed opening jungle.map file. Should be in assets/tilemaps/jungle.map");
-  // }
-  //
-  // in_file.close();
-  // Game::map_width = number_of_map_cols * TILE_SIZE * tile_scale; 
-  // Game::map_height = number_of_map_rows * TILE_SIZE * tile_scale;
-  //
+  lua.script_file("./assets/scripts/level" + std::to_string(level_num) + ".lua");
+
+  sol::table level = lua["Level"];
+  sol::table assets = level["assets"];
+
+  size_t i = 0;
+  while (true) {
+    sol::optional<sol::table> has_asset = assets[i];
+    if (has_asset == sol::nullopt) break;
+
+    sol::table asset = assets[i];
+
+    std::string asset_type = asset["type"];
+    std::string asset_id = asset["id"];
+    std::string asset_file_path = asset["file"];
+
+    if (asset_type == "texture") { 
+      asset_manager->add_texture(renderer, asset_id, asset_file_path);
+      Logger::Log("Asset manager added texture with ID: [" + asset_id + "]");
+    }
+
+    if (asset_type == "font") { 
+      asset_manager->add_font(asset_id, asset_file_path, asset["font_size"]);
+      Logger::Log("Asset manager added font with ID: [" + asset_id + "]");
+    }
+
+    i++;
+  }
+
+  // Read tilemap
+  const sol::table map = level["tilemap"];
+  const std::string map_file_path = map["map_file"];
+  const std::string map_texture_asset_id = map["texture_asset_id"];
+  const uint16_t number_of_map_rows = map["num_rows"];
+  const uint16_t number_of_map_cols = map["num_cols"];
+  const uint16_t tile_size = map["tile_size"];
+  const double tile_scale = map["tile_scale"];
+
+  std::ifstream in_file;
+  in_file.open(map_file_path);
+  if (in_file) {
+    for (int y = 0; y < number_of_map_rows; y++) {
+      for (int x = 0; x < number_of_map_cols; x++) {
+        char ch;
+
+        in_file.get(ch);
+        uint16_t src_rect_y = std::atoi(&ch) * tile_size;
+
+        in_file.get(ch);
+        uint16_t src_rect_x = std::atoi(&ch) * tile_size;
+
+        in_file.ignore();
+
+        Entity map_tile = registry->create_entity();
+        map_tile.add_component<TransformComponent>(glm::vec2(x * (tile_scale * tile_size), y * (tile_scale * tile_size)), glm::vec2(tile_scale, tile_scale), 0.0);
+        map_tile.add_component<SpriteComponent>(map_texture_asset_id, tile_size, tile_size, src_rect_x, src_rect_y, 0, false);
+      }
+    }
+  } else {
+    Logger::Err("Failed opening jungle.map file. Should be in assets/tilemaps/jungle.map");
+  }
+
+  in_file.close();
+  Game::map_width = number_of_map_cols * tile_size * tile_scale; 
+  Game::map_height = number_of_map_rows * tile_size * tile_scale;
+
+  // Load entities
+  sol::table entities = level["entities"];
+  i = 0;
+
+  while (true) {
+    sol::optional<sol::table> has_entity = entities[i];
+    if (has_entity == sol::nullopt) break;
+
+    sol::table entity = entities[i];
+    Entity new_entity = registry->create_entity();
+    
+    sol::optional<std::string> tag = entity["tag"];
+    if (tag != sol::nullopt) new_entity.tag(entity["tag"]);
+
+    sol::optional<std::string> group = entity["group"];
+    if (group != sol::nullopt) new_entity.group(entity["group"]);
+
+    sol::optional<sol::table> has_components = entity["components"];
+    if (has_components != sol::nullopt) {
+
+      sol::optional<sol::table> transform = entity["components"]["transform"];
+      if (transform != sol::nullopt) {
+        new_entity.add_component<TransformComponent>(
+          glm::vec2(
+            entity["components"]["transform"]["position"]["x"],
+            entity["components"]["transform"]["position"]["y"]
+          ),
+          glm::vec2(
+            entity["components"]["transform"]["scale"]["x"].get_or(2.0),
+            entity["components"]["transform"]["scale"]["y"].get_or(2.0)
+          ),
+          entity["components"]["transform"]["rotation"].get_or(0)
+        );
+      }
+
+    sol::optional<sol::table> rigid_body = entity["components"]["rigid_body"];
+      if (rigid_body != sol::nullopt) {
+        new_entity.add_component<RigidBodyComponent>(
+          glm::vec2(
+            entity["components"]["rigid_body"]["velocity"]["x"],
+            entity["components"]["rigid_body"]["velocity"]["y"]
+          )
+        );
+      }
+
+    sol::optional<sol::table> sprite = entity["components"]["sprite"];
+      if (sprite != sol::nullopt) {
+        new_entity.add_component<SpriteComponent>(
+          entity["components"]["sprite"]["texture_asset_id"],
+          entity["components"]["sprite"]["width"],
+          entity["components"]["sprite"]["height"],
+          entity["components"]["sprite"]["z_index"].get_or(1),
+          entity["components"]["sprite"]["is_fixed"].get_or(false),
+          entity["components"]["sprite"]["src_rect_x"].get_or(0),
+          entity["components"]["sprite"]["src_rect_y"].get_or(0)
+        );
+      }
+
+    sol::optional<sol::table> animation = entity["components"]["animation"];
+      if (animation != sol::nullopt) {
+        new_entity.add_component<AnimationComponent>(
+          entity["components"]["animation"]["num_frames"].get_or(1),
+          entity["components"]["animation"]["speed_rate"].get_or(1)
+        );
+      }
+
+    sol::optional<sol::table> collider = entity["components"]["box_collider"];
+      if (collider != sol::nullopt) {
+        new_entity.add_component<BoxColliderComponent>(
+          entity["components"]["box_collider"]["width"],
+          entity["components"]["box_collider"]["height"],
+          glm::vec2(
+            entity["components"]["box_collider"]["offset"]["x"].get_or(0),
+            entity["components"]["box_collider"]["offset"]["y"].get_or(0)
+          )
+        );
+      }
+
+    sol::optional<sol::table> health = entity["components"]["health"];
+      if (health != sol::nullopt) {
+        new_entity.add_component<HealthComponent>(
+          entity["components"]["health"]["health_percentage"].get_or(100)
+        );
+      }
+
+    sol::optional<sol::table> projectile_emitter = entity["components"]["projectile_emitter"];
+      if (projectile_emitter != sol::nullopt) {
+        new_entity.add_component<ProjectileEmitterComponent>(
+          glm::vec2(
+          entity["components"]["projectile_emitter"]["projectile_velocity"]["x"],
+          entity["components"]["projectile_emitter"]["projectile_velocity"]["y"]
+          ),
+          static_cast<int>(entity["components"]["projectile_emitter"]["repeat_frequence"].get_or(1)) * 1000,
+          static_cast<int>(entity["components"]["projectile_emitter"]["projectile_duration"].get_or(5)) * 1000,
+          static_cast<int>(entity["components"]["projectile_emitter"]["damage"].get_or(10)),
+          entity["components"]["projectile_emitter"]["is_friendly"].get_or(false)
+        );
+      }
+
+    sol::optional<sol::table> keyboard_control = entity["components"]["keyboard_control"];
+      if (keyboard_control != sol::nullopt) {
+        new_entity.add_component<KeyboardControlComponent>(
+          glm::vec2(
+          entity["components"]["keyboard_control"]["up_velocity"]["x"],
+          entity["components"]["keyboard_control"]["up_velocity"]["y"]
+          ),
+          glm::vec2(
+          entity["components"]["keyboard_control"]["right_velocity"]["x"],
+          entity["components"]["keyboard_control"]["right_velocity"]["y"]
+          ),        
+          glm::vec2(
+          entity["components"]["keyboard_control"]["down_velocity"]["x"],
+          entity["components"]["keyboard_control"]["down_velocity"]["y"]
+          ),
+          glm::vec2(
+          entity["components"]["keyboard_control"]["left_velocity"]["x"],
+          entity["components"]["keyboard_control"]["left_velocity"]["y"]
+          )
+        );
+      }
+
+      sol::optional<sol::table> camera_follow = entity["components"]["camera_follow"];
+      if (camera_follow != sol::nullopt) new_entity.add_component<CameraComponent>();
+
+      sol::optional<sol::table> godmode_component = entity["components"]["godmode_component"];
+      if (godmode_component != sol::nullopt) new_entity.add_component<GodModeComponent>(false);
+    }
+    i++;
+  }
+  
+  Logger::Log("Opened level1.lua!");
   // const SDL_Color COLOR_RED = {255, 0, 0};
   // const SDL_Color COLOR_YELLOW = {255, 255, 0};
   // const SDL_Color COLOR_GREEN = {0, 255, 0};
