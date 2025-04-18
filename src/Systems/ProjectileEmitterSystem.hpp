@@ -61,7 +61,7 @@ public:
           projectile.group("projectile");
           projectile.add_component<TransformComponent>(projectile_pos, glm::vec2(1.0, 1.0), 0);
           projectile.add_component<RigidBodyComponent>(projectile_velocity);
-          projectile.add_component<SpriteComponent>("bullet-image", 4, 4, 0, 0, 3, false);
+          projectile.add_component<SpriteComponent>("bullet-texture", 4, 4, 0, 0, 3, false);
           projectile.add_component<BoxColliderComponent>(4, 4);
           projectile.add_component<CollisionComponent>();
           projectile.add_component<ProjectileComponent>(projectile_emitter.is_friendly, projectile_emitter.damage, projectile_emitter.projectile_duration);
@@ -93,7 +93,7 @@ public:
         projectile.group("projectile");
         projectile.add_component<TransformComponent>(projectile_pos, glm::vec2(1.0, 1.0), 0);
         projectile.add_component<RigidBodyComponent>(projectile_emitter.projectile_velocity);
-        projectile.add_component<SpriteComponent>("bullet-image", 4, 4, 0, 0, 3, false);
+        projectile.add_component<SpriteComponent>("bullet-texture", 4, 4, 0, 0, 3, false);
         projectile.add_component<BoxColliderComponent>(4, 4);
         projectile.add_component<CollisionComponent>();
         projectile.add_component<ProjectileComponent>(projectile_emitter.is_friendly, projectile_emitter.damage, projectile_emitter.projectile_duration);
