@@ -2,12 +2,25 @@
 #include <SDL2/SDL_ttf.h>
 #include <cstdint>
 #include <memory>
+#include <fstream>
 #include <string>
-#include "./LevelLoader.hpp"
 #include "../ECS/ECS.hpp"
 #include "../../libs/glm/glm.hpp"
 #include "../Logger/Logger.hpp"
 #include "Game.hpp"
+#include "../Components/TransformComponent.hpp"
+#include "../Components/RigidBodyComponent.hpp"
+#include "../Components/SpriteComponent.hpp"
+#include "../Components/AnimationComponent.hpp"
+#include "../Components/BoxColliderComponent.hpp"
+#include "../Components/KeyboardControlComponent.hpp"
+#include "../Components/CollisionComponent.hpp"
+#include "../Components/CameraComponent.hpp"
+#include "../Components/HealthComponent.hpp"
+#include "../Components/ProjectileEmitterComponent.hpp"
+#include "../Components/TextComponent.hpp"
+#include "../Components/MovingTextComponent.hpp"
+#include "../Components/GodModeComponent.hpp"
 #include "../Systems/MovementSystem.hpp"
 #include "../Systems/CameraMovementSystem.hpp"
 #include "../Systems/RenderSystem.hpp"
@@ -45,6 +58,196 @@ Game::Game() {
 Game::~Game() {
   Logger::Log("Game Destructor Called");
 }
+
+void Game::LoadLevel(int level) {
+  // Systems
+  registry->add_system<MovementSystem>();
+  registry->add_system<RenderSystem>();
+  registry->add_system<AnimationSystem>();
+  registry->add_system<CollisionSystem>();
+  registry->add_system<RenderCollisionSystem>();
+  registry->add_system<DamageSystem>();
+  registry->add_system<KeyboardMovementSystem>();
+  registry->add_system<CameraMovementSystem>();
+  registry->add_system<ProjectileEmitterSystem>();
+  registry->add_system<ProjectileDurationSystem>();
+  registry->add_system<RenderTextSystem>();
+  registry->add_system<MovingTextSystem>();
+  registry->add_system<RenderHealthSystem>();
+  registry->add_system<RenderGUISystem>();
+
+  // The linker will find #includes properly, however, when using images etc you must do it from the
+  // makefiles perspective. It lives in the main dir, outside this /src/Game dir
+  asset_manager->add_texture(renderer, "tank-image", "./assets/images/tank-tiger-right.png");
+  asset_manager->add_texture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
+  asset_manager->add_texture(renderer, "helicopter-image", "./assets/images/chopper-spritesheet.png");
+  asset_manager->add_texture(renderer, "radar-image", "./assets/images/radar.png");
+  asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
+  asset_manager->add_texture(renderer, "bullet-image", "./assets/images/bullet.png");
+  asset_manager->add_texture(renderer, "tree-image", "./assets/images/tree.png");
+  asset_manager->add_font("charriot-font", "./assets/fonts/charriot.ttf", 16);
+  asset_manager->add_font("arial-font", "./assets/fonts/arial.ttf", 16);
+
+  const uint8_t TILE_SIZE = 32;
+  uint8_t number_of_map_cols = 25;
+  uint8_t number_of_map_rows = 20;
+  float tile_scale = 3.5;
+
+  std::ifstream in_file {"./assets/tilemaps/jungle.map"};
+  if (in_file) {
+    for (int y = 0; y < number_of_map_rows; y++) {
+      for (int x = 0; x < number_of_map_cols; x++) {
+        char ch;
+
+        in_file.get(ch);
+        uint16_t src_rect_y = std::atoi(&ch) * TILE_SIZE;
+
+        in_file.get(ch);
+        uint16_t src_rect_x = std::atoi(&ch) * TILE_SIZE;
+
+        in_file.ignore();
+
+        Entity map_tile = registry->create_entity();
+        map_tile.group("tile");
+        map_tile.add_component<TransformComponent>(glm::vec2(x * (tile_scale * TILE_SIZE), y * (tile_scale * TILE_SIZE)), glm::vec2(tile_scale, tile_scale), 0.0);
+        map_tile.add_component<SpriteComponent>("jungle-tilemap", TILE_SIZE, TILE_SIZE, src_rect_x, src_rect_y, 0, false);
+      }
+    }
+  } else {
+    Logger::Err("Failed opening jungle.map file. Should be in assets/tilemaps/jungle.map");
+  }
+
+  in_file.close();
+  map_width = number_of_map_cols * TILE_SIZE * tile_scale; 
+  map_height = number_of_map_rows * TILE_SIZE * tile_scale;
+  
+  const SDL_Color COLOR_RED = {255, 0, 0};
+  const SDL_Color COLOR_YELLOW = {255, 255, 0};
+  const SDL_Color COLOR_GREEN = {0, 255, 0};
+
+  // Entities & Components
+  Entity helicopter = registry->create_entity(); // 500
+  helicopter.tag("player");
+  helicopter.add_component<TransformComponent>(glm::vec2(50, 90), glm::vec2(2.0, 2.0), 0.0);
+  helicopter.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
+  helicopter.add_component<SpriteComponent>("helicopter-image", 32, 32, 0, 0, 3);
+  helicopter.add_component<AnimationComponent>(2, 10, true);
+  helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -320), glm::vec2(320, 0), glm::vec2(0, 320), glm::vec2(-320, 0));
+  helicopter.add_component<BoxColliderComponent>(32, 32);
+  helicopter.add_component<CollisionComponent>();
+  helicopter.add_component<CameraComponent>();
+  helicopter.add_component<HealthComponent>(100);
+  helicopter.add_component<ProjectileEmitterComponent>(glm::vec2(500, 500), 0, 2000, 10, true);
+  helicopter.add_component<GodModeComponent>(false);
+  helicopter.add_component<MovingTextComponent>(0, -15, "Helicopter", "arial-font", COLOR_GREEN);
+
+  Entity radar = registry->create_entity();
+  radar.add_component<TransformComponent>(glm::vec2(10, 50), glm::vec2(2.0, 2.0), 0.0);
+  radar.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
+  radar.add_component<SpriteComponent>("radar-image", 64, 64, 0, 0, 4, true);
+  radar.add_component<AnimationComponent>(8, 5, true);
+
+  Entity tank = registry->create_entity(); // 502
+  tank.group("enemy");
+  tank.add_component<TransformComponent>(glm::vec2(450, 860), glm::vec2(2.0, 2.0), 0.0);
+  tank.add_component<RigidBodyComponent>(glm::vec2(90.0, 0.0));
+  tank.add_component<SpriteComponent>("tank-image", 32, 32, 0, 0, 2); // imgs are 32px, width and height, src rect x, src rect y, then z-index
+  tank.add_component<BoxColliderComponent>(32, 32);
+  tank.add_component<CollisionComponent>();
+  tank.add_component<HealthComponent>(100);
+  tank.add_component<ProjectileEmitterComponent>(glm::vec2(250, 0), 2000, 10000, 10, false);
+  tank.add_component<GodModeComponent>(false);
+  tank.add_component<MovingTextComponent>(7, -10, "Tank", "arial-font", COLOR_RED);
+
+  Entity truck = registry->create_entity(); // 503
+  truck.group("enemy");
+  truck.add_component<TransformComponent>(glm::vec2(180, 860), glm::vec2(2.0, 2.0), 0.0);
+  truck.add_component<RigidBodyComponent>(glm::vec2(0.0, 00.0));
+  truck.add_component<SpriteComponent>("truck-image", 32, 32, 0, 0, 1);
+  truck.add_component<BoxColliderComponent>(32, 32);
+  truck.add_component<CollisionComponent>();
+  truck.add_component<HealthComponent>(100);
+  truck.add_component<GodModeComponent>(true);
+  truck.add_component<MovingTextComponent>(10, -10, "Truck", "arial-font", COLOR_YELLOW);
+
+  Entity tree0 = registry->create_entity();
+  tree0.group("object");
+  tree0.add_component<TransformComponent>(glm::vec2(400, 860), glm::vec2(2.0, 2.0), 0.0);
+  tree0.add_component<SpriteComponent>("tree-image", 16, 32, 0, 0, 3);
+  tree0.add_component<BoxColliderComponent>(16, 32);
+  tree0.add_component<CollisionComponent>();
+
+  Entity tree1 = registry->create_entity();
+  tree1.group("object");
+  tree1.add_component<TransformComponent>(glm::vec2(700, 860), glm::vec2(2.0, 2.0), 0.0);
+  tree1.add_component<SpriteComponent>("tree-image", 16, 32, 0, 0, 3);
+  tree1.add_component<BoxColliderComponent>(16, 32);
+  tree1.add_component<CollisionComponent>();
+
+  Entity text = registry->create_entity();
+  SDL_Color COLOR_WHITE = {255, 255, 255};
+  text.add_component<TextComponent>(true, glm::vec2(WINDOW_WIDTH / 2 - 60, 0), "Shiba Engine 2D!", "arial-font", COLOR_WHITE);
+
+  Entity display_fps = registry->create_entity();
+  display_fps.tag("fps");
+  display_fps.add_component<TextComponent>(true, glm::vec2(0, 500), "", "arial-font", COLOR_WHITE);
+}
+
+void Game::Setup() {
+  LoadLevel(1);
+}
+
+void Game::Update() {
+  // Yield resources to OS
+  uint32_t time_to_wait = MS_PER_FRAME - (SDL_GetTicks() - ms_previous_frame);
+  if (time_to_wait > 0 && time_to_wait <= MS_PER_FRAME)
+    SDL_Delay(time_to_wait);
+ 
+  // DT is diff in ticks since last frame, converted to seconds
+  double delta_time = (SDL_GetTicks() - ms_previous_frame) / 1000.0;
+
+  current_fps = static_cast<int>(1 / delta_time);
+
+  // Store current frame time
+  ms_previous_frame = SDL_GetTicks();
+
+  // Reset event handlers for current frame
+  event_manager->reset();
+
+  // Only valid for this current frame
+  registry->get_system<MovementSystem>().ListenForEvents(event_manager);
+  registry->get_system<DamageSystem>().ListenForEvents(event_manager);
+  registry->get_system<KeyboardMovementSystem>().ListenForEvents(event_manager);
+  registry->get_system<ProjectileEmitterSystem>().ListenForEvents(event_manager);
+
+  registry->get_system<MovementSystem>().Update(delta_time);
+  registry->get_system<AnimationSystem>().Update();
+  registry->get_system<CollisionSystem>().Update(event_manager);
+  registry->get_system<CameraMovementSystem>().Update(camera);
+  registry->get_system<ProjectileEmitterSystem>().Update(registry);
+  registry->get_system<ProjectileDurationSystem>().Update();
+
+  // Process entities that are waiting to be created/destroyed
+  registry->update();
+}
+
+void Game::Render() {
+  SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
+  SDL_RenderClear(renderer);
+
+  registry->get_system<RenderSystem>().Update(renderer, asset_manager, camera);
+  registry->get_system<RenderTextSystem>().Update(asset_manager, renderer, camera, current_fps);
+  registry->get_system<MovingTextSystem>().Update(asset_manager, renderer, camera);
+  registry->get_system<RenderHealthSystem>().Update(renderer, camera);
+
+  if (debug_enabled) {
+    registry->get_system<RenderCollisionSystem>().Update(renderer, camera);
+    registry->get_system<RenderGUISystem>().Update(renderer, registry);
+  }
+
+  // Double buffer
+  SDL_RenderPresent(renderer);
+};
 
 void Game::Initialize() {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -152,27 +355,14 @@ void Game::Initialize() {
   is_running = true;
 };
 
-void Game::Setup() {
-  // Systems
-  registry->add_system<MovementSystem>();
-  registry->add_system<RenderSystem>();
-  registry->add_system<AnimationSystem>();
-  registry->add_system<CollisionSystem>();
-  registry->add_system<RenderCollisionSystem>();
-  registry->add_system<DamageSystem>();
-  registry->add_system<KeyboardMovementSystem>();
-  registry->add_system<CameraMovementSystem>();
-  registry->add_system<ProjectileEmitterSystem>();
-  registry->add_system<ProjectileDurationSystem>();
-  registry->add_system<RenderTextSystem>();
-  registry->add_system<MovingTextSystem>();
-  registry->add_system<RenderHealthSystem>();
-  registry->add_system<RenderGUISystem>();
-  
-  LevelLoader loader;
-  lua.open_libraries(sol::lib::base, sol::lib::math);
-  loader.LoadLevel(lua, 1, registry, asset_manager, renderer);
-}
+void Game::Run() {
+  Setup();
+  while (is_running) {
+    ProcessInput();
+    Update();
+    Render();
+  }
+};
 
 void Game::ProcessInput() {
   SDL_Event sdl_event;
@@ -198,67 +388,6 @@ void Game::ProcessInput() {
           break;
         }
     }
-  }
-};
-
-void Game::Update() {
-  // Yield resources to OS
-  uint32_t time_to_wait = MS_PER_FRAME - (SDL_GetTicks() - ms_previous_frame);
-  if (time_to_wait > 0 && time_to_wait <= MS_PER_FRAME)
-    SDL_Delay(time_to_wait);
- 
-  // DT is diff in ticks since last frame, converted to seconds
-  double delta_time = (SDL_GetTicks() - ms_previous_frame) / 1000.0;
-
-  current_fps = static_cast<int>(1 / delta_time);
-
-  // Store current frame time
-  ms_previous_frame = SDL_GetTicks();
-
-  // Reset event handlers for current frame
-  event_manager->reset();
-
-  // Only valid for this current frame
-  registry->get_system<MovementSystem>().ListenForEvents(event_manager);
-  registry->get_system<DamageSystem>().ListenForEvents(event_manager);
-  registry->get_system<KeyboardMovementSystem>().ListenForEvents(event_manager);
-  registry->get_system<ProjectileEmitterSystem>().ListenForEvents(event_manager);
-
-  registry->get_system<MovementSystem>().Update(delta_time);
-  registry->get_system<AnimationSystem>().Update();
-  registry->get_system<CollisionSystem>().Update(event_manager);
-  registry->get_system<CameraMovementSystem>().Update(camera);
-  registry->get_system<ProjectileEmitterSystem>().Update(registry);
-  registry->get_system<ProjectileDurationSystem>().Update();
-
-  // Process entities that are waiting to be created/destroyed
-  registry->update();
-}
-
-void Game::Render() {
-  SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
-  SDL_RenderClear(renderer);
-
-  registry->get_system<RenderSystem>().Update(renderer, asset_manager, camera);
-  registry->get_system<RenderTextSystem>().Update(asset_manager, renderer, camera, current_fps);
-  registry->get_system<MovingTextSystem>().Update(asset_manager, renderer, camera);
-  registry->get_system<RenderHealthSystem>().Update(renderer, camera);
-
-  if (debug_enabled) {
-    registry->get_system<RenderCollisionSystem>().Update(renderer, camera);
-    registry->get_system<RenderGUISystem>().Update(renderer, registry);
-  }
-
-  // Double buffer
-  SDL_RenderPresent(renderer);
-};
-
-void Game::Run() {
-  Setup();
-  while (is_running) {
-    ProcessInput();
-    Update();
-    Render();
   }
 };
 
