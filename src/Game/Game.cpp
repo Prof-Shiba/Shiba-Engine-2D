@@ -170,7 +170,8 @@ void Game::Setup() {
   registry->add_system<RenderGUISystem>();
   
   LevelLoader loader;
-  loader.LoadLevel(1, registry, asset_manager, renderer);
+  lua.open_libraries(sol::lib::base, sol::lib::math);
+  loader.LoadLevel(lua, 1, registry, asset_manager, renderer);
 }
 
 void Game::ProcessInput() {
