@@ -2,7 +2,6 @@
 #include <SDL2/SDL_ttf.h>
 #include <cstdint>
 #include <memory>
-#include <fstream>
 #include <string>
 #include "../ECS/ECS.hpp"
 #include "../../libs/glm/glm.hpp"
@@ -77,7 +76,7 @@ void Game::LoadLevel(int level) {
 
   // The linker will find #includes properly, however, when using images etc you must do it from the
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
-  asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
+  asset_manager->add_texture(renderer, "background", "./assets/images/space/background/Assets/layered/blue-with-stars.png");
   asset_manager->add_texture(renderer, "bullet-image", "./assets/images/bullet.png");
   asset_manager->add_texture(renderer, "tree-image", "./assets/images/tree.png");
   asset_manager->add_texture(renderer, "spaceship-image", "./assets/images/space/friendly_ships/Main-Ships/Base-ships/PNGs/Main Ship - Base - Full health.png");
@@ -91,31 +90,6 @@ void Game::LoadLevel(int level) {
   uint8_t number_of_map_rows = 20;
   float tile_scale = 3.5;
 
-  std::ifstream in_file {"./assets/tilemaps/jungle.map"};
-  if (in_file) {
-    for (int y = 0; y < number_of_map_rows; y++) {
-      for (int x = 0; x < number_of_map_cols; x++) {
-        char ch;
-
-        in_file.get(ch);
-        uint16_t src_rect_y = std::atoi(&ch) * TILE_SIZE;
-
-        in_file.get(ch);
-        uint16_t src_rect_x = std::atoi(&ch) * TILE_SIZE;
-
-        in_file.ignore();
-
-        Entity map_tile = registry->create_entity();
-        map_tile.group("tile");
-        map_tile.add_component<TransformComponent>(glm::vec2(x * (tile_scale * TILE_SIZE), y * (tile_scale * TILE_SIZE)), glm::vec2(tile_scale, tile_scale), 0.0);
-        map_tile.add_component<SpriteComponent>("jungle-tilemap", TILE_SIZE, TILE_SIZE, src_rect_x, src_rect_y, 0, false);
-      }
-    }
-  } else {
-    Logger::Err("Failed opening jungle.map file. Should be in assets/tilemaps/jungle.map");
-  }
-
-  in_file.close();
   map_width = number_of_map_cols * TILE_SIZE * tile_scale; 
   map_height = number_of_map_rows * TILE_SIZE * tile_scale;
   
@@ -124,8 +98,12 @@ void Game::LoadLevel(int level) {
   const SDL_Color COLOR_GREEN = {0, 255, 0};
 
   //////////////////////////////////////////////////////////////////////////////////////////////////// 
-  // Adding Entities & Components
+  // Playfield/background
   //////////////////////////////////////////////////////////////////////////////////////////////////// 
+  Entity playfield = registry->create_entity();
+  playfield.tag("playfield");
+  playfield.add_component<TransformComponent>(glm::vec2(0), glm::vec2(1), 0.0);
+  playfield.add_component<SpriteComponent>("background", map_width, map_height, 0, 0, -1);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   /// HUD
