@@ -24,23 +24,23 @@ public:
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    const static char* sprites[] = { "tank-image", "truck-image"};
+    const static char* sprites[] = { "spaceship-image", "tree-image"};
     static bool enemy_godmode = false;
     static int32_t enemy_x_pos = 0;
     static int32_t enemy_y_pos = 0;
-    static int32_t enemy_z_index = 2;
+    static int32_t enemy_z_index = 3;
     static int32_t current_sprite = 0;
     static int32_t enemy_health = 100;
     static int32_t proj_vel_x = 150;
     static int32_t proj_vel_y = 0;
     static int32_t proj_repeat_speed = 5;
     static int32_t proj_duration = 5;
-    static int32_t box_collider_x = 32;
-    static int32_t box_collider_y = 32;
+    static int32_t box_collider_x = 34;
+    static int32_t box_collider_y = 33;
     static float enemy_scale_x = 2.0;
     static float enemy_scale_y = 2.0;
-    static float enemy_rotation = 0;
-    static float enemy_velocity_x = 0;
+    static float enemy_rotation = 90;
+    static float enemy_velocity_x = 90;
     static float enemy_velocity_y = 0;
     static std::string enemy_name = "";
 
@@ -52,7 +52,7 @@ public:
       ImGui::InputInt("Enemy z-index", &enemy_z_index);
 
       // NOTE: needs to be re-written for when other assets are added
-      (current_sprite == 0) ? enemy_name = "Tank" : enemy_name = "Truck";
+      (current_sprite == 0) ? enemy_name = "Spaceship" : enemy_name = "Tree";
       ImGui::SeparatorText("Sprite image");
       ImGui::Combo("Sprite selection", &current_sprite, sprites, 2);
 
