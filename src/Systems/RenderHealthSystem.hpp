@@ -40,6 +40,7 @@ public:
         HEIGHT
       };
 
+      // TODO: Get sprite comp here, if using ship, change to damaged versions on health changes
       if (health.health_amount >= 71)
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
       else if (health.health_amount <= 70 && health.health_amount >= 31)
