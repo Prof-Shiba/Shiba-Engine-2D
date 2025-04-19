@@ -17,7 +17,8 @@ public:
     for (auto& entity: get_system_entities()) {
       const auto& health = entity.get_component<HealthComponent>();
       const auto& transform = entity.get_component<TransformComponent>();
-      const uint16_t Y_OFFSET = 65;
+      const uint16_t X_OFFSET = 15;
+      const uint16_t Y_OFFSET = 75;
       const uint16_t HEIGHT = 5;
       int16_t width = 60;
 
@@ -33,7 +34,7 @@ public:
       }
 
       SDL_Rect rect {
-        static_cast<int>(transform.position.x - camera.x),
+        static_cast<int>(transform.position.x - camera.x) + X_OFFSET,
         static_cast<int>(transform.position.y - camera.y) + Y_OFFSET,
         width,
         HEIGHT
