@@ -50,18 +50,19 @@ public:
     if (y) (transform.position.y >= Game::map_height - resolution_offset) ? transform.position.y -= 1 : transform.position.y += 1;
   }
 
+  // TODO: Fix flipping for new models
   void object_hit_enemy(Entity object, Entity enemy) {
     if (enemy.has_component<RigidBodyComponent>() && enemy.has_component<SpriteComponent>()) {
       auto& rigid_body = enemy.get_component<RigidBodyComponent>();
-      auto& sprite = enemy.get_component<SpriteComponent>();
+      auto& transform = enemy.get_component<TransformComponent>();
 
       if (rigid_body.velocity.x != 0) {
         rigid_body.velocity.x *= -1;
-        sprite.flip = (sprite.flip == SDL_FLIP_NONE) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+        transform.rotation *= -1;
       }
       if (rigid_body.velocity.y != 0) {
         rigid_body.velocity.y *= -1;
-        sprite.flip = (sprite.flip == SDL_FLIP_NONE) ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE;
+        transform.rotation *= -1;
       }
     }
   }
