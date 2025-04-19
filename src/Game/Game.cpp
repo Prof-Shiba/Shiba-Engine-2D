@@ -11,7 +11,6 @@
 #include "../Components/TransformComponent.hpp"
 #include "../Components/RigidBodyComponent.hpp"
 #include "../Components/SpriteComponent.hpp"
-#include "../Components/AnimationComponent.hpp"
 #include "../Components/BoxColliderComponent.hpp"
 #include "../Components/KeyboardControlComponent.hpp"
 #include "../Components/CollisionComponent.hpp"
@@ -24,7 +23,6 @@
 #include "../Systems/MovementSystem.hpp"
 #include "../Systems/CameraMovementSystem.hpp"
 #include "../Systems/RenderSystem.hpp"
-#include "../Systems/AnimationSystem.hpp"
 #include "../Systems/CollisionSystem.hpp"
 #include "../Systems/RenderCollisionSystem.hpp"
 #include "../Systems/DamageSystem.hpp"
@@ -38,6 +36,8 @@
 #include "../../libs/imgui/imgui.h"
 #include "../../libs/imgui/backends/imgui_impl_sdl2.h"
 #include "../../libs/imgui/backends/imgui_impl_sdlrenderer2.h"
+// #include "../Components/AnimationComponent.hpp"
+// #include "../Systems/AnimationSystem.hpp"
 
 uint16_t Game::WINDOW_HEIGHT;
 uint16_t Game::WINDOW_WIDTH;
@@ -60,10 +60,8 @@ Game::~Game() {
 }
 
 void Game::LoadLevel(int level) {
-  // Systems
   registry->add_system<MovementSystem>();
   registry->add_system<RenderSystem>();
-  registry->add_system<AnimationSystem>();
   registry->add_system<CollisionSystem>();
   registry->add_system<RenderCollisionSystem>();
   registry->add_system<DamageSystem>();
@@ -75,17 +73,17 @@ void Game::LoadLevel(int level) {
   registry->add_system<MovingTextSystem>();
   registry->add_system<RenderHealthSystem>();
   registry->add_system<RenderGUISystem>();
+  // registry->add_system<AnimationSystem>();
 
   // The linker will find #includes properly, however, when using images etc you must do it from the
   // makefiles perspective. It lives in the main dir, outside this /src/Game dir
-  asset_manager->add_texture(renderer, "tank-image", "./assets/images/tank-tiger-right.png");
-  asset_manager->add_texture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
-  asset_manager->add_texture(renderer, "helicopter-image", "./assets/images/chopper-spritesheet.png");
-  asset_manager->add_texture(renderer, "radar-image", "./assets/images/radar.png");
   asset_manager->add_texture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
   asset_manager->add_texture(renderer, "bullet-image", "./assets/images/bullet.png");
   asset_manager->add_texture(renderer, "tree-image", "./assets/images/tree.png");
-  asset_manager->add_font("charriot-font", "./assets/fonts/charriot.ttf", 16);
+  asset_manager->add_texture(renderer, "spaceship-image", "./assets/images/space/friendly_ships/Main-Ships/Base-ships/PNGs/Main Ship - Base - Full health.png");
+  asset_manager->add_texture(renderer, "spaceship-slight-damage-image", "./assets/images/space/friendly_ships/Main-Ships/Base-ships/PNGs/Main Ship - Base - Slight damage.png");
+  asset_manager->add_texture(renderer, "spaceship-damaged-image", "./assets/images/space/friendly_ships/Main-Ships/Base-ships/PNGs/Main Ship - Base - Damaged.png");
+  asset_manager->add_texture(renderer, "spaceship-heavy-damage-image", "./assets/images/space/friendly_ships/Main-Ships/Base-ships/PNGs/Main Ship - Base - Very damaged.png");
   asset_manager->add_font("arial-font", "./assets/fonts/arial.ttf", 16);
 
   const uint8_t TILE_SIZE = 32;
@@ -125,65 +123,13 @@ void Game::LoadLevel(int level) {
   const SDL_Color COLOR_YELLOW = {255, 255, 0};
   const SDL_Color COLOR_GREEN = {0, 255, 0};
 
-  // Entities & Components
-  Entity helicopter = registry->create_entity(); // 500
-  helicopter.tag("player");
-  helicopter.add_component<TransformComponent>(glm::vec2(50, 90), glm::vec2(2.0, 2.0), 0.0);
-  helicopter.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
-  helicopter.add_component<SpriteComponent>("helicopter-image", 32, 32, 0, 0, 3);
-  helicopter.add_component<AnimationComponent>(2, 10, true);
-  helicopter.add_component<KeyboardControlComponent>(glm::vec2(0, -320), glm::vec2(320, 0), glm::vec2(0, 320), glm::vec2(-320, 0));
-  helicopter.add_component<BoxColliderComponent>(32, 32);
-  helicopter.add_component<CollisionComponent>();
-  helicopter.add_component<CameraComponent>();
-  helicopter.add_component<HealthComponent>(100);
-  helicopter.add_component<ProjectileEmitterComponent>(glm::vec2(500, 500), 0, 2000, 10, true);
-  helicopter.add_component<GodModeComponent>(false);
-  helicopter.add_component<MovingTextComponent>(0, -15, "Helicopter", "arial-font", COLOR_GREEN);
+  //////////////////////////////////////////////////////////////////////////////////////////////////// 
+  // Adding Entities & Components
+  //////////////////////////////////////////////////////////////////////////////////////////////////// 
 
-  Entity radar = registry->create_entity();
-  radar.add_component<TransformComponent>(glm::vec2(10, 50), glm::vec2(2.0, 2.0), 0.0);
-  radar.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
-  radar.add_component<SpriteComponent>("radar-image", 64, 64, 0, 0, 4, true);
-  radar.add_component<AnimationComponent>(8, 5, true);
-
-  Entity tank = registry->create_entity(); // 502
-  tank.group("enemy");
-  tank.add_component<TransformComponent>(glm::vec2(450, 860), glm::vec2(2.0, 2.0), 0.0);
-  tank.add_component<RigidBodyComponent>(glm::vec2(90.0, 0.0));
-  tank.add_component<SpriteComponent>("tank-image", 32, 32, 0, 0, 2); // imgs are 32px, width and height, src rect x, src rect y, then z-index
-  tank.add_component<BoxColliderComponent>(32, 32);
-  tank.add_component<CollisionComponent>();
-  tank.add_component<HealthComponent>(100);
-  tank.add_component<ProjectileEmitterComponent>(glm::vec2(250, 0), 2000, 10000, 10, false);
-  tank.add_component<GodModeComponent>(false);
-  tank.add_component<MovingTextComponent>(7, -10, "Tank", "arial-font", COLOR_RED);
-
-  Entity truck = registry->create_entity(); // 503
-  truck.group("enemy");
-  truck.add_component<TransformComponent>(glm::vec2(180, 860), glm::vec2(2.0, 2.0), 0.0);
-  truck.add_component<RigidBodyComponent>(glm::vec2(0.0, 00.0));
-  truck.add_component<SpriteComponent>("truck-image", 32, 32, 0, 0, 1);
-  truck.add_component<BoxColliderComponent>(32, 32);
-  truck.add_component<CollisionComponent>();
-  truck.add_component<HealthComponent>(100);
-  truck.add_component<GodModeComponent>(true);
-  truck.add_component<MovingTextComponent>(10, -10, "Truck", "arial-font", COLOR_YELLOW);
-
-  Entity tree0 = registry->create_entity();
-  tree0.group("object");
-  tree0.add_component<TransformComponent>(glm::vec2(400, 860), glm::vec2(2.0, 2.0), 0.0);
-  tree0.add_component<SpriteComponent>("tree-image", 16, 32, 0, 0, 3);
-  tree0.add_component<BoxColliderComponent>(16, 32);
-  tree0.add_component<CollisionComponent>();
-
-  Entity tree1 = registry->create_entity();
-  tree1.group("object");
-  tree1.add_component<TransformComponent>(glm::vec2(700, 860), glm::vec2(2.0, 2.0), 0.0);
-  tree1.add_component<SpriteComponent>("tree-image", 16, 32, 0, 0, 3);
-  tree1.add_component<BoxColliderComponent>(16, 32);
-  tree1.add_component<CollisionComponent>();
-
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  /// HUD
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   Entity text = registry->create_entity();
   SDL_Color COLOR_WHITE = {255, 255, 255};
   text.add_component<TextComponent>(true, glm::vec2(WINDOW_WIDTH / 2 - 60, 0), "Shiba Engine 2D!", "arial-font", COLOR_WHITE);
@@ -191,6 +137,39 @@ void Game::LoadLevel(int level) {
   Entity display_fps = registry->create_entity();
   display_fps.tag("fps");
   display_fps.add_component<TextComponent>(true, glm::vec2(0, 500), "", "arial-font", COLOR_WHITE);
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  /// CHARACTERS
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  Entity spaceship = registry->create_entity();
+  spaceship.tag("player");
+  spaceship.add_component<TransformComponent>(glm::vec2(200, 700), glm::vec2(2.0, 2.0), 0.0);
+  spaceship.add_component<RigidBodyComponent>(glm::vec2(0.0, 00.0));
+  spaceship.add_component<SpriteComponent>("spaceship-image", 48, 48, 0, 0, 3);
+  spaceship.add_component<KeyboardControlComponent>(glm::vec2(0, -320), glm::vec2(320, 0), glm::vec2(0, 320), glm::vec2(-320, 0));
+  spaceship.add_component<CameraComponent>();
+  spaceship.add_component<BoxColliderComponent>(34, 33, glm::vec2(14,15));
+  spaceship.add_component<ProjectileEmitterComponent>(glm::vec2(500, 500), 0, 2000, 10, true);
+  spaceship.add_component<CollisionComponent>();
+  spaceship.add_component<HealthComponent>(100);
+  spaceship.add_component<GodModeComponent>(false);
+  spaceship.add_component<MovingTextComponent>(10, -17, "Spaceship", "arial-font", COLOR_GREEN);
+
+  Entity enemy_ship = registry->create_entity();
+  enemy_ship.group("enemy");
+  enemy_ship.add_component<TransformComponent>(glm::vec2(250, 800), glm::vec2(2.0, 2.0), 90.0);
+  enemy_ship.add_component<RigidBodyComponent>(glm::vec2(90.0, 0.0));
+  enemy_ship.add_component<SpriteComponent>("spaceship-heavy-damage-image", 48, 48, 0, 0, 3); // img width and height, src rect x and y, z-index, is_fixed
+  enemy_ship.add_component<BoxColliderComponent>(34, 33, glm::vec2(14, 15));
+  enemy_ship.add_component<CollisionComponent>();
+  enemy_ship.add_component<HealthComponent>(15);
+  enemy_ship.add_component<ProjectileEmitterComponent>(glm::vec2(250, 0), 2000, 10000, 10, false);
+  enemy_ship.add_component<GodModeComponent>(false);
+  enemy_ship.add_component<MovingTextComponent>(7, -15, "Enemy spaceship", "arial-font", COLOR_RED);
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  /// OBJECTS
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 void Game::Setup() {
@@ -219,13 +198,12 @@ void Game::Update() {
   registry->get_system<DamageSystem>().ListenForEvents(event_manager);
   registry->get_system<KeyboardMovementSystem>().ListenForEvents(event_manager);
   registry->get_system<ProjectileEmitterSystem>().ListenForEvents(event_manager);
-
   registry->get_system<MovementSystem>().Update(delta_time);
-  registry->get_system<AnimationSystem>().Update();
   registry->get_system<CollisionSystem>().Update(event_manager);
   registry->get_system<CameraMovementSystem>().Update(camera);
   registry->get_system<ProjectileEmitterSystem>().Update(registry);
   registry->get_system<ProjectileDurationSystem>().Update();
+  // registry->get_system<AnimationSystem>().Update();
 
   // Process entities that are waiting to be created/destroyed
   registry->update();
@@ -383,7 +361,7 @@ void Game::ProcessInput() {
           break;
         }
 
-        if (sdl_event.key.keysym.sym == SDLK_d) {
+        if (sdl_event.key.keysym.sym == SDLK_F1) {
           (!debug_enabled) ? debug_enabled = true : debug_enabled = false;
           break;
         }
