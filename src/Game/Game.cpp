@@ -89,8 +89,8 @@ void Game::LoadLevel(int level) {
   asset_manager->add_texture(renderer, "planet-image", "./assets/images/space/background/Assets/layered/prop-planet-big.png");
   asset_manager->add_font("arial-font", "./assets/fonts/arial.ttf", 16);
 
-  map_width = 4500; 
-  map_height = 4500;
+  map_width = 2800; 
+  map_height = 2240;
   
   const SDL_Color COLOR_RED = {255, 0, 0};
   const SDL_Color COLOR_YELLOW = {255, 255, 0};
@@ -170,7 +170,7 @@ void Game::LoadLevel(int level) {
 
   Entity planet = registry->create_entity();
   planet.group("object");
-  planet.add_component<TransformComponent>(glm::vec2(200, 700), glm::vec2(4.0, 4.0), 0.0);
+  planet.add_component<TransformComponent>(glm::vec2(25, 200), glm::vec2(4.0, 4.0), 0.0);
   planet.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   planet.add_component<SpriteComponent>("planet-image", 126, 126, 0, 0, 1, false);
 }

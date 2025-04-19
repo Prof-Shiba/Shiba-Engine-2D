@@ -12,6 +12,8 @@ const uint16_t TARGET_FPS = 144;
 // 1000ms -> 1 second. Each frame should take 16.6 repeating ms
 const uint16_t MS_PER_FRAME = 1000 / TARGET_FPS;
 const int8_t DEFAULT_MONITOR_NUMBER = -1;
+const uint32_t timer = 0;
+const uint32_t score = 0;
 
 class Game {
 public:
