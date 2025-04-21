@@ -40,8 +40,10 @@ public:
 
           if (entity.has_component<SpriteComponent>()) {
             auto& sprite = entity.get_component<SpriteComponent>();
-            projectile_pos.x += (static_cast<float>(sprite.width) / 2);
-            projectile_pos.y += (static_cast<float>(sprite.height) / 2);
+            const static uint8_t x_offset = 20;
+            const static uint8_t y_offset = 20;
+            projectile_pos.x += (static_cast<float>(sprite.width) / 2) + x_offset;
+            projectile_pos.y += (static_cast<float>(sprite.height) / 2) + y_offset;
           }
 
           glm::vec2 projectile_velocity = projectile_emitter.projectile_velocity;
