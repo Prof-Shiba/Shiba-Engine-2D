@@ -39,7 +39,7 @@ public:
      return;
   }
 
-  void object_hit_player(Entity object, Entity player) {
+  void object_hit_player(const Entity& object, Entity& player) {
     auto& rigid_body = player.get_component<RigidBodyComponent>();
     rigid_body.velocity.x = 0;
     rigid_body.velocity.y = 0;
