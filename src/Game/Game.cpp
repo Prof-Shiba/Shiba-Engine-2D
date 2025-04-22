@@ -107,7 +107,10 @@ void Game::LoadLevel(int level) {
   display_fps.tag("fps");
   display_fps.add_component<TextComponent>(true, glm::vec2(0, 500), "", "arial-font", COLOR_WHITE);
 
-  // TODO: Score
+  // TODO: Score functionality
+  Entity display_score = registry->create_entity();
+  display_score.tag("score");
+  display_score.add_component<TextComponent>(true, glm::vec2(0, 520), "Score: ", "arial-font", COLOR_WHITE);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   /// Entities
