@@ -4,7 +4,6 @@
 #include <cstdlib>
 #include <memory>
 #include <string>
-#include <random>
 #include "../ECS/ECS.hpp"
 #include "../../libs/glm/glm.hpp"
 #include "../Logger/Logger.hpp"
@@ -81,10 +80,9 @@ void Game::LoadLevel(int level) {
   asset_manager->add_texture(renderer, "background", "./assets/images/space/background/Assets/layered/blue-with-stars.png");
   asset_manager->add_texture(renderer, "bullet-image", "./assets/images/bullet.png");
   asset_manager->add_texture(renderer, "tree-image", "./assets/images/tree.png");
-  asset_manager->add_texture(renderer, "spaceship-image", "./assets/images/space/friendly_ships/Main-Ships/Base-ships/PNGs/Main Ship - Base - Full health.png");
-  asset_manager->add_texture(renderer, "spaceship-slight-damage-image", "./assets/images/space/friendly_ships/Main-Ships/Base-ships/PNGs/Main Ship - Base - Slight damage.png");
-  asset_manager->add_texture(renderer, "spaceship-damaged-image", "./assets/images/space/friendly_ships/Main-Ships/Base-ships/PNGs/Main Ship - Base - Damaged.png");
-  asset_manager->add_texture(renderer, "spaceship-heavy-damage-image", "./assets/images/space/friendly_ships/Main-Ships/Base-ships/PNGs/Main Ship - Base - Very damaged.png");
+  asset_manager->add_texture(renderer, "player-image", "./assets/images/space/friendly_ships/Main-Ships/Base-ships/PNGs/Main Ship - Base - Full health.png");
+  asset_manager->add_texture(renderer, "player-hurt-image", "./assets/images/space/friendly_ships/Main-Ships/Base-ships/PNGs/Main Ship - Base - Slight damage.png");
+  asset_manager->add_texture(renderer, "player-dying-image", "./assets/images/space/friendly_ships/Main-Ships/Base-ships/PNGs/Main Ship - Base - Very damaged.png");
   asset_manager->add_texture(renderer, "asteroid-image", "./assets/images/space/background/Assets/layered/asteroid-1.png");
   asset_manager->add_texture(renderer, "planet-image", "./assets/images/space/background/Assets/layered/prop-planet-big.png");
   asset_manager->add_font("arial-font", "./assets/fonts/arial.ttf", 16);
@@ -98,28 +96,27 @@ void Game::LoadLevel(int level) {
   const SDL_Color COLOR_WHITE = {255, 255, 255};
 
   //////////////////////////////////////////////////////////////////////////////////////////////////// 
-  // Playfield/background
+  // Playfield and HUD
   //////////////////////////////////////////////////////////////////////////////////////////////////// 
   Entity playfield = registry->create_entity();
   playfield.tag("playfield");
   playfield.add_component<TransformComponent>(glm::vec2(0), glm::vec2(1), 0.0);
   playfield.add_component<SpriteComponent>("background", map_width, map_height, 0, 0, -1);
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
-  /// HUD
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
   Entity display_fps = registry->create_entity();
   display_fps.tag("fps");
   display_fps.add_component<TextComponent>(true, glm::vec2(0, 500), "", "arial-font", COLOR_WHITE);
 
+  // TODO: Score
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
-  /// CHARACTERS
+  /// Entities
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   Entity spaceship = registry->create_entity();
   spaceship.tag("player");
   spaceship.add_component<TransformComponent>(glm::vec2(200, 700), glm::vec2(2.0, 2.0), 0.0);
   spaceship.add_component<RigidBodyComponent>(glm::vec2(0.0, 00.0));
-  spaceship.add_component<SpriteComponent>("spaceship-image", 48, 48, 0, 0, 3);
+  spaceship.add_component<SpriteComponent>("player-image", 48, 48, 0, 0, 3);
   spaceship.add_component<KeyboardControlComponent>(glm::vec2(0, -320), glm::vec2(320, 0), glm::vec2(0, 320), glm::vec2(-320, 0));
   spaceship.add_component<CameraComponent>();
   spaceship.add_component<BoxColliderComponent>(34, 33, glm::vec2(14,15));
@@ -133,7 +130,7 @@ void Game::LoadLevel(int level) {
   enemy_ship.group("enemy");
   enemy_ship.add_component<TransformComponent>(glm::vec2(250, 800), glm::vec2(2.0, 2.0), 90.0);
   enemy_ship.add_component<RigidBodyComponent>(glm::vec2(90.0, 0.0));
-  enemy_ship.add_component<SpriteComponent>("spaceship-heavy-damage-image", 48, 48, 0, 0, 3); // img width and height, src rect x and y, z-index, is_fixed
+  enemy_ship.add_component<SpriteComponent>("player-hurt-image", 48, 48, 0, 0, 3); // img width and height, src rect x and y, z-index, is_fixed
   enemy_ship.add_component<BoxColliderComponent>(34, 33, glm::vec2(14, 15));
   enemy_ship.add_component<CollisionComponent>();
   enemy_ship.add_component<HealthComponent>(15);
@@ -145,24 +142,20 @@ void Game::LoadLevel(int level) {
   enemy_ship_godmode.group("enemy");
   enemy_ship_godmode.add_component<TransformComponent>(glm::vec2(250, 400), glm::vec2(2.0, 2.0), 90.0);
   enemy_ship_godmode.add_component<RigidBodyComponent>(glm::vec2(90.0, 0.0));
-  enemy_ship_godmode.add_component<SpriteComponent>("spaceship-slight-damage-image", 48, 48, 0, 0, 4); // img width and height, src rect x and y, z-index, is_fixed
+  enemy_ship_godmode.add_component<SpriteComponent>("player-dying-image", 48, 48, 0, 0, 4);
   enemy_ship_godmode.add_component<BoxColliderComponent>(34, 33, glm::vec2(14, 15));
   enemy_ship_godmode.add_component<CollisionComponent>();
   enemy_ship_godmode.add_component<HealthComponent>(100);
-  enemy_ship_godmode.add_component<ProjectileEmitterComponent>(glm::vec2(500, 0), 1000, 1000, 10, false);
+  enemy_ship_godmode.add_component<ProjectileEmitterComponent>(glm::vec2(500, 0), 1000, 5000, 10, false);
   enemy_ship_godmode.add_component<GodModeComponent>(true);
   enemy_ship_godmode.add_component<MovingTextComponent>(7, -15, "Enemy spaceship", "arial-font", COLOR_YELLOW);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   /// OBJECTS
   ////////////////////////////////////////////////////////////////////////////////////////////////////
-  srand(time(0));
-  uint16_t random_x = rand() % 800;
-  uint16_t random_y = rand() % 600;
-
   Entity asteroid = registry->create_entity();
   asteroid.group("object");
-  asteroid.add_component<TransformComponent>(glm::vec2(random_x, random_y), glm::vec2(2.0, 2.0), 0.0);
+  asteroid.add_component<TransformComponent>(glm::vec2(200, 400), glm::vec2(2.0, 2.0), 0.0);
   asteroid.add_component<RigidBodyComponent>(glm::vec2(50.0, 20.0));
   asteroid.add_component<SpriteComponent>("asteroid-image", 32, 27, 0, 0, 2, false);
   asteroid.add_component<BoxColliderComponent>(32, 27, glm::vec2(0));
