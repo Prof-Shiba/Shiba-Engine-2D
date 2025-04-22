@@ -2,6 +2,7 @@
 #include "../ECS/ECS.hpp"
 #include "../Components/HealthComponent.hpp"
 #include "../Components/TransformComponent.hpp"
+#include "../Components/SpriteComponent.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
@@ -17,14 +18,13 @@ public:
     for (auto& entity: get_system_entities()) {
       const auto& health = entity.get_component<HealthComponent>();
       const auto& transform = entity.get_component<TransformComponent>();
+      auto& sprite = entity.get_component<SpriteComponent>();
+
       const uint16_t X_OFFSET = 15;
       const uint16_t Y_OFFSET = 75;
       const uint16_t HEIGHT = 5;
       int16_t width = 60;
 
-      // NOTE: Running into this while loop
-      // every single time! Find a better way
-      // of doing this! 2025-04-09
       if (health.health_amount != 100) {
         int16_t missing_health = 100 - health.health_amount;
         while (missing_health > 0) {
@@ -40,13 +40,19 @@ public:
         HEIGHT
       };
 
-      // TODO: Get sprite comp here, if using ship, change to damaged versions on health changes
-      if (health.health_amount >= 71)
+      if (health.health_amount >= 71) {
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-      else if (health.health_amount <= 70 && health.health_amount >= 31)
+      }
+      else if (health.health_amount <= 70 && health.health_amount >= 31) {
         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-      else 
+        if (entity.has_tag("player"))
+          sprite.asset_id = "player-hurt-image";
+      }
+      else {
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        if (entity.has_tag("player"))
+          sprite.asset_id = "player-dying-image";
+      }
 
       SDL_RenderFillRect(renderer, &rect);
       SDL_RenderDrawRect(renderer, &rect);
