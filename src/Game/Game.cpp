@@ -241,8 +241,8 @@ void Game::Initialize() {
   SDL_GetCurrentDisplayMode(0, &display_mode);
 
   // This will be the total area the player can view
-  WINDOW_WIDTH = 2560;
-  WINDOW_HEIGHT = 1440;
+  WINDOW_WIDTH = display_mode.w;
+  WINDOW_HEIGHT = display_mode.h;
 
   window = SDL_CreateWindow(
     "Shiba Engine",
